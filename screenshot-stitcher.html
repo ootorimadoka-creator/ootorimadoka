@@ -1,0 +1,243 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>スクショつなぎ</title>
+<style>
+:root{--bg:#eef1f6;--ink:#1d2433;--sub:#6b7488;--line:#d5dbe6;--main:#3d5afe;--cut:#ff3d71;--card:#fff}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"Hiragino Sans","Yu Gothic UI","Noto Sans JP",system-ui,sans-serif;line-height:1.6}
+header{padding:20px 16px 8px;max-width:760px;margin:0 auto}
+h1{font-size:22px;margin:0}
+header p{margin:2px 0 0;color:var(--sub);font-size:14px}
+.bar{position:sticky;top:0;z-index:20;background:rgba(238,241,246,.92);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
+.bar-in{max-width:760px;margin:0 auto;padding:10px 16px;display:flex;flex-wrap:wrap;gap:10px 14px;align-items:center}
+button,select{font:inherit}
+.btn{border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:10px;padding:8px 14px;cursor:pointer}
+.btn:hover{border-color:var(--main)}
+.btn.main{background:var(--main);border-color:var(--main);color:#fff;font-weight:600}
+.btn.main:disabled{opacity:.4;cursor:not-allowed}
+.btn:focus-visible,select:focus-visible{outline:3px solid #9fb0ff;outline-offset:2px}
+label{font-size:13px;color:var(--sub);display:flex;align-items:center;gap:6px}
+select{border:1px solid var(--line);border-radius:8px;padding:6px 8px;background:var(--card);color:var(--ink)}
+.spacer{flex:1}
+.info{font-size:12px;color:var(--sub)}
+main{max-width:760px;margin:0 auto;padding:16px}
+.drop{border:2px dashed var(--line);border-radius:14px;padding:36px 16px;text-align:center;color:var(--sub);background:rgba(255,255,255,.5);cursor:pointer}
+.drop.on{border-color:var(--main);background:#e6ebff;color:var(--main)}
+.strip{width:min(100%,520px);margin:16px auto 0;display:flex;flex-direction:column;background:#fff;box-shadow:0 2px 14px rgba(20,30,60,.12)}
+.item{position:relative;line-height:0}
+.clip{position:relative;overflow:hidden;width:100%}
+.clip img{position:absolute;left:0;width:100%;display:block;pointer-events:none;user-select:none}
+.item.drag{opacity:.35}
+.item.over::before{content:"";position:absolute;left:0;right:0;top:-3px;height:6px;background:var(--main);z-index:6}
+.h{position:absolute;left:0;right:0;height:26px;z-index:5;cursor:ns-resize;touch-action:none}
+.h.t{top:0}.h.b{bottom:0}
+.h.t{--c:#0a84ff}.h.b{--c:#ff3b4e}
+.h::before{content:"";position:absolute;left:0;right:0;height:3px;background:var(--c);opacity:.85}
+.h.t::before{top:0}.h.b::before{bottom:0}
+.h::after{position:absolute;left:50%;width:84px;height:20px;margin-left:-42px;background:var(--c);color:#fff;font-size:11px;line-height:20px;text-align:center;font-weight:600;box-shadow:0 1px 4px rgba(0,0,0,.3)}
+.h.t::after{content:"▼ 上を切る";top:0;border-radius:0 0 8px 8px}
+.h.b::after{content:"▲ 下を切る";bottom:0;border-radius:8px 8px 0 0}
+.h:hover::before,.h.act::before{height:4px;opacity:1}
+.k{font-weight:700}.k.t{color:#0a84ff}.k.b{color:#ff3b4e}
+.tools{position:absolute;top:32px;right:8px;display:flex;gap:4px;z-index:7;line-height:1}
+.tools button{width:34px;height:34px;border-radius:50%;border:none;background:rgba(20,28,45,.78);color:#fff;font-size:16px;cursor:pointer}
+.tools button:hover{background:var(--main)}
+.tools .grip{cursor:grab}
+.num{position:absolute;left:8px;top:32px;z-index:7;background:rgba(20,28,45,.78);color:#fff;font-size:12px;line-height:1;padding:5px 8px;border-radius:99px}
+.hint{text-align:center;font-size:13px;color:var(--sub);margin:14px auto 0;max-width:520px}
+</style>
+</head>
+<body>
+<header>
+  <h1>スクショつなぎ</h1>
+  <p>スクショを並べて、つなぎ目をスライドで調整。1枚の縦長画像にして保存できます。画像はこの端末の中だけで処理されます。</p>
+</header>
+
+<div class="bar"><div class="bar-in">
+  <button class="btn" id="add">画像を追加</button>
+  <label>幅
+    <select id="mode">
+      <option value="max">いちばん広い画像に合わせる</option>
+      <option value="min">いちばん狭い画像に合わせる</option>
+      <option value="first">1枚目に合わせる</option>
+    </select>
+  </label>
+  <span class="spacer"></span>
+  <span class="info" id="info"></span>
+  <button class="btn" id="clear">すべて消す</button>
+  <button class="btn" id="saveFile" disabled>ファイルに保存</button>
+  <button class="btn main" id="save" disabled>写真に保存</button>
+</div></div>
+
+<main>
+  <div class="drop" id="drop" tabindex="0" role="button">ここにスクショをドロップ<br>またはタップして選択(貼り付けもOK)</div>
+  <div class="strip" id="strip" hidden></div>
+  <p class="hint" id="hint" hidden>各画像の<span class="k t">青い線(上を切る)</span>と<span class="k b">赤い線(下を切る)</span>をドラッグすると、その分だけ切り取られて隙間なくつながります。順番は ≡ をドラッグ、または ↑↓ ボタンで入れ替えできます。</p>
+</main>
+<input type="file" id="file" accept="image/*" multiple hidden>
+
+<script>
+const $ = id => document.getElementById(id);
+const strip = $('strip'), drop = $('drop'), file = $('file');
+let items = [], dragIdx = null;
+const MIN_KEEP = 0.04; // 1枚あたり最低限残す割合
+
+function load(f){
+  return new Promise(res => {
+    const url = URL.createObjectURL(f), img = new Image();
+    img.onload = () => res({img, url, t: 0, b: 0});
+    img.onerror = () => { URL.revokeObjectURL(url); res(null); };
+    img.src = url;
+  });
+}
+async function addFiles(list){
+  const files = [...list].filter(f => f.type.startsWith('image/'));
+  const loaded = (await Promise.all(files.map(load))).filter(Boolean);
+  items.push(...loaded);
+  render();
+}
+function move(i, j){
+  if (j < 0 || j >= items.length) return;
+  items.splice(j, 0, items.splice(i, 1)[0]);
+  render();
+}
+// 切り取り量(t,b)を見た目に反映
+function applyCrop(clip, it){
+  const keep = 1 - it.t - it.b, w = it.img.naturalWidth, h = it.img.naturalHeight;
+  clip.style.aspectRatio = w + ' / ' + (h * keep);
+  const im = clip.firstChild;
+  im.style.height = (100 / keep) + '%';
+  im.style.top = (-it.t / keep * 100) + '%';
+}
+function bindHandle(h, clip, it, key){
+  h.onpointerdown = e => {
+    e.preventDefault();
+    h.setPointerCapture(e.pointerId);
+    h.classList.add('act');
+    const y0 = e.clientY, v0 = it[key], full = clip.clientHeight / (1 - it.t - it.b);
+    const sign = key === 't' ? 1 : -1, other = key === 't' ? 'b' : 't';
+    h.onpointermove = ev => {
+      let v = v0 + sign * (ev.clientY - y0) / full;
+      v = Math.max(0, Math.min(v, 1 - it[other] - MIN_KEEP));
+      it[key] = v;
+      applyCrop(clip, it);
+      updateInfo();
+    };
+    h.onpointerup = h.onpointercancel = () => { h.classList.remove('act'); h.onpointermove = h.onpointerup = h.onpointercancel = null; };
+  };
+  h.ondblclick = () => { it[key] = 0; applyCrop(clip, it); updateInfo(); };
+}
+function render(){
+  strip.innerHTML = '';
+  items.forEach((it, i) => {
+    const el = document.createElement('div');
+    el.className = 'item';
+    el.innerHTML = '<div class="clip"><img alt=""></div><div class="h t" title="ドラッグで上を切り取り(ダブルクリックでリセット)"></div><div class="h b" title="ドラッグで下を切り取り(ダブルクリックでリセット)"></div>' +
+      '<span class="num">' + (i + 1) + '</span>' +
+      '<div class="tools"><button class="grip" title="ドラッグで移動" aria-label="移動">≡</button><button title="上へ" aria-label="上へ">↑</button><button title="下へ" aria-label="下へ">↓</button><button title="削除" aria-label="削除">✕</button></div>';
+    const clip = el.querySelector('.clip');
+    clip.firstChild.src = it.url;
+    applyCrop(clip, it);
+    bindHandle(el.querySelector('.h.t'), clip, it, 't');
+    bindHandle(el.querySelector('.h.b'), clip, it, 'b');
+    const [grip, up, down, del] = el.querySelectorAll('.tools button');
+    up.onclick = () => move(i, i - 1);
+    down.onclick = () => move(i, i + 1);
+    del.onclick = () => { URL.revokeObjectURL(it.url); items.splice(i, 1); render(); };
+    grip.onmousedown = () => { el.draggable = true; };
+    el.ondragstart = e => { dragIdx = i; el.classList.add('drag'); e.dataTransfer.effectAllowed = 'move'; e.dataTransfer.setData('text/plain', ''); };
+    el.ondragend = () => { dragIdx = null; el.draggable = false; render(); };
+    el.ondragover = e => { if (dragIdx === null) return; e.preventDefault(); el.classList.add('over'); };
+    el.ondragleave = () => el.classList.remove('over');
+    el.ondrop = e => {
+      if (dragIdx === null) return;
+      e.preventDefault(); e.stopPropagation();
+      const from = dragIdx; dragIdx = null;
+      move(from, i);
+    };
+    strip.appendChild(el);
+  });
+  const has = items.length > 0;
+  strip.hidden = $('hint').hidden = !has;
+  $('save').disabled = $('saveFile').disabled = !has;
+  drop.style.padding = has ? '16px' : '36px 16px';
+  updateInfo();
+}
+function calc(){
+  if (!items.length) return {w: 0, h: 0, scale: 1};
+  const ws = items.map(i => i.img.naturalWidth), mode = $('mode').value;
+  const w = mode === 'max' ? Math.max(...ws) : mode === 'min' ? Math.min(...ws) : ws[0];
+  const total = items.reduce((s, i) => s + i.img.naturalHeight * (1 - i.t - i.b) * w / i.img.naturalWidth, 0);
+  const scale = Math.min(1, 30000 / total);
+  return {w: Math.round(w * scale), h: Math.round(total * scale), scale};
+}
+function updateInfo(){
+  const c = calc();
+  $('info').textContent = items.length ? `${items.length}枚 → ${c.w}×${c.h}px` : '';
+}
+function download(b){
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(b);
+  a.download = 'long-image.png';
+  a.click();
+  setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+}
+function note(msg){
+  $('info').textContent = msg;
+  setTimeout(updateInfo, 5000);
+}
+function build(cb){
+  const c = calc();
+  const cv = document.createElement('canvas');
+  cv.width = c.w; cv.height = c.h;
+  const ctx = cv.getContext('2d');
+  ctx.fillStyle = '#fff'; ctx.fillRect(0, 0, c.w, c.h);
+  let y = 0;
+  for (const it of items){
+    const nw = it.img.naturalWidth, nh = it.img.naturalHeight;
+    const sy = nh * it.t, sh = nh * (1 - it.t - it.b);
+    const y0 = Math.round(y), y1 = Math.round(y + sh * c.w / nw); // 端数を丸めて隙間が出ないようにする
+    ctx.drawImage(it.img, 0, sy, nw, sh, 0, y0, c.w, y1 - y0);
+    y += sh * c.w / nw;
+  }
+  cv.toBlob(b => {
+    if (!b) { alert('画像が大きすぎて保存できませんでした。枚数を減らしてください。'); return; }
+    cb(b);
+  }, 'image/png');
+}
+function saveFile(){ build(download); }
+function savePhoto(){
+  build(async b => {
+    const f = new File([b], 'long-image.png', {type: 'image/png'});
+    if (navigator.canShare && navigator.canShare({files: [f]})) {
+      try { await navigator.share({files: [f]}); }
+      catch (e) { if (e.name !== 'AbortError') { download(b); note('共有に失敗したので、ファイルとして保存しました'); } }
+    } else {
+      download(b);
+      note('この環境では写真に直接保存できないので、ファイルとして保存しました');
+    }
+  });
+}
+
+$('add').onclick = () => file.click();
+drop.onclick = () => file.click();
+drop.onkeydown = e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); file.click(); } };
+file.onchange = () => { addFiles(file.files); file.value = ''; };
+$('mode').onchange = updateInfo;
+$('clear').onclick = () => { items.forEach(i => URL.revokeObjectURL(i.url)); items = []; render(); };
+$('save').onclick = savePhoto;
+$('saveFile').onclick = saveFile;
+window.addEventListener('dragover', e => { if (e.dataTransfer && [...e.dataTransfer.types].includes('Files')) { e.preventDefault(); drop.classList.add('on'); } });
+window.addEventListener('dragleave', e => { if (!e.relatedTarget) drop.classList.remove('on'); });
+window.addEventListener('drop', e => {
+  drop.classList.remove('on');
+  if (e.dataTransfer && e.dataTransfer.files.length) { e.preventDefault(); addFiles(e.dataTransfer.files); }
+});
+window.addEventListener('paste', e => { if (e.clipboardData && e.clipboardData.files.length) addFiles(e.clipboardData.files); });
+render();
+</script>
+</body>
+</html>

@@ -1,0 +1,269 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>スクショ黒塗りツール</title>
+<style>
+:root{--bg:#F3F5F8;--panel:#fff;--ink:#1A2030;--sub:#5B6475;--line:#D5DAE3;--accent:#2F5BEA;box-sizing:border-box}
+*{box-sizing:inherit}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.6 "Hiragino Sans","Yu Gothic UI","Noto Sans JP",system-ui,sans-serif}
+header{padding:20px clamp(16px,4vw,40px) 4px}
+h1{margin:0;font-size:22px;font-weight:700}
+header p{margin:4px 0 0;color:var(--sub);max-width:60ch}
+main{display:grid;grid-template-columns:minmax(260px,330px) 1fr;gap:16px;padding:16px clamp(16px,4vw,40px) 40px;align-items:start}
+@media(max-width:800px){main{grid-template-columns:1fr}}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:16px;display:flex;flex-direction:column;gap:14px}
+label.t{font-weight:600;display:block;margin-bottom:4px}
+.hint{color:var(--sub);font-size:13px;margin:0}
+textarea{width:100%;min-height:96px;resize:vertical;font:inherit;padding:8px;border:1px solid var(--line);border-radius:6px}
+button{font:inherit;padding:8px 14px;border-radius:6px;border:1px solid var(--line);background:#fff;color:var(--ink);cursor:pointer}
+button:hover:not(:disabled){border-color:var(--accent)}
+button:disabled{opacity:.45;cursor:default}
+button.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+button:focus-visible,textarea:focus-visible,input:focus-visible{outline:3px solid #9DB4FF;outline-offset:1px}
+.row{display:flex;flex-wrap:wrap;gap:8px}
+.chips button{padding:3px 10px;font-size:13px}
+#drop{border:2px dashed var(--line);border-radius:8px;padding:18px;text-align:center;color:var(--sub);cursor:pointer}
+#drop.over{border-color:var(--accent);color:var(--accent)}
+#status{min-height:1.6em;color:var(--sub);font-size:14px;margin:0}
+#stage{overflow:auto;background:repeating-conic-gradient(#e8ebf1 0 25%,#f6f7fa 0 50%) 0 0/16px 16px;border:1px solid var(--line);border-radius:10px;padding:8px}
+#stage[hidden]{display:none}
+canvas{display:block;max-width:100%;height:auto;margin:auto;cursor:crosshair;touch-action:none;background:#fff}
+.empty{border:1px solid var(--line);border-radius:10px;padding:40px 20px;text-align:center;color:var(--sub);background:var(--panel)}
+.empty[hidden]{display:none}
+</style>
+</head>
+<body>
+<header>
+  <h1>スクショ黒塗りツール</h1>
+  <p>文字を認識して、指定した言葉だけを黒塗り・モザイクにします。画像はこのブラウザの中だけで処理され、外部には送信されません。</p>
+</header>
+<main>
+  <section class="panel">
+    <div id="drop" tabindex="0" role="button">画像をドロップ / クリックで選択 / 貼り付け(Ctrl+V)</div>
+    <input id="file" type="file" accept="image/*" hidden>
+
+    <div>
+      <label class="t" for="keys">隠したい言葉(1行に1つ)</label>
+      <textarea id="keys" placeholder="山田太郎&#10;090-1234-5678"></textarea>
+      <p class="hint">/ で囲むと正規表現になります。大文字小文字は区別しません。</p>
+      <div class="row chips" style="margin-top:6px">
+        <button type="button" data-p="/[\w.+-]+@[\w-]+\.[\w.-]+/">メール</button>
+        <button type="button" data-p="/0\d{1,4}-\d{1,4}-\d{3,4}/">電話番号</button>
+        <button type="button" data-p="/https?:\/\/\S+/">URL</button>
+      </div>
+    </div>
+
+    <div>
+      <span class="t" style="font-weight:600">加工方法</span>
+      <div class="row">
+        <label><input type="radio" name="mode" value="black" checked> 黒塗り</label>
+        <label><input type="radio" name="mode" value="mosaic"> モザイク</label>
+      </div>
+      <label for="bs" class="hint" style="display:block;margin-top:6px">モザイクの粗さ</label>
+      <input id="bs" type="range" min="6" max="40" value="14" style="width:100%">
+      <p class="hint">機密情報には黒塗りがおすすめです。</p>
+    </div>
+
+    <div class="row">
+      <button id="ocrBtn" class="primary" disabled>文字を認識</button>
+      <button id="dl" disabled>PNGで保存</button>
+    </div>
+    <p id="status" role="status" aria-live="polite"></p>
+    <p class="hint">プレビュー上で、枠をクリックすると有効/無効を切り替え、ドラッグすると手動で範囲を追加できます(手動の枠はクリックで削除)。</p>
+  </section>
+
+  <section>
+    <div id="empty" class="empty">画像を読み込むとここにプレビューが表示されます。</div>
+    <div id="stage" hidden><canvas id="cv"></canvas></div>
+  </section>
+</main>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/tesseract.js/5.1.1/tesseract.min.js"></script>
+<script>
+const $ = id => document.getElementById(id);
+const cv = $('cv'), ctx = cv.getContext('2d');
+let img = null, lines = [], rects = [], drag = null;
+
+const setStatus = s => $('status').textContent = s;
+
+function loadFile(f){
+  if (!f || !f.type.startsWith('image/')) return;
+  const i = new Image();
+  i.onload = () => {
+    img = i; cv.width = i.naturalWidth; cv.height = i.naturalHeight;
+    lines = []; rects = [];
+    $('stage').hidden = false; $('empty').hidden = true;
+    $('ocrBtn').disabled = false; $('dl').disabled = false;
+    setStatus('読み込みました。「文字を認識」を押してください。');
+    render(true);
+  };
+  i.src = URL.createObjectURL(f);
+}
+
+/* ---- 入力 ---- */
+const drop = $('drop');
+drop.onclick = () => $('file').click();
+drop.onkeydown = e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); $('file').click(); } };
+$('file').onchange = e => loadFile(e.target.files[0]);
+['dragover','dragenter'].forEach(n => drop.addEventListener(n, e => { e.preventDefault(); drop.classList.add('over'); }));
+['dragleave','drop'].forEach(n => drop.addEventListener(n, e => { e.preventDefault(); drop.classList.remove('over'); }));
+drop.addEventListener('drop', e => loadFile(e.dataTransfer.files[0]));
+document.addEventListener('paste', e => loadFile([...e.clipboardData.files][0]));
+
+document.querySelectorAll('.chips button').forEach(b => b.onclick = () => {
+  const t = $('keys'); t.value = (t.value.trim() ? t.value.trim() + '\n' : '') + b.dataset.p; autoMatch();
+});
+$('keys').addEventListener('input', autoMatch);
+document.querySelectorAll('input[name=mode]').forEach(r => r.onchange = () => render(true));
+$('bs').oninput = () => render(true);
+
+/* ---- OCR ---- */
+$('ocrBtn').onclick = async () => {
+  $('ocrBtn').disabled = true;
+  try {
+    const worker = await Tesseract.createWorker(['jpn', 'eng'], 1, {
+      logger: m => setStatus(m.status === 'recognizing text'
+        ? `認識中… ${Math.round(m.progress * 100)}%`
+        : '準備中…(初回は言語データを読み込むため時間がかかります)')
+    });
+    const { data } = await worker.recognize(img);
+    await worker.terminate();
+    lines = (data.lines || []).map(l => {
+      const syms = [];
+      (l.words || []).forEach(w => (w.symbols || []).forEach(s => {
+        if (s.text && s.text.trim()) syms.push({ t: s.text, b: s.bbox });
+      }));
+      return syms;
+    }).filter(s => s.length);
+    autoMatch(true);
+  } catch (err) {
+    setStatus('認識に失敗しました。ネットワーク接続を確認して、もう一度お試しください。');
+    console.error(err);
+  }
+  $('ocrBtn').disabled = false;
+};
+
+/* ---- 照合 ---- */
+function parseKeys(){
+  return $('keys').value.split('\n').map(s => s.trim()).filter(Boolean).map(s => {
+    const m = s.match(/^\/(.+)\/$/);
+    if (m) { try { return new RegExp(m[1], 'gi'); } catch { return null; } }
+    return s.replace(/\s+/g, '').toLowerCase();
+  }).filter(Boolean);
+}
+
+function autoMatch(afterOcr){
+  if (!lines.length) return;
+  const keys = parseKeys(), pad = 4, out = [];
+  for (const syms of lines) {
+    let str = '', map = [];
+    syms.forEach((s, i) => { for (const ch of s.t.replace(/\s+/g, '')) { str += ch.toLowerCase(); map.push(i); } });
+    const ranges = [];
+    for (const k of keys) {
+      if (k instanceof RegExp) {
+        k.lastIndex = 0; let m;
+        while ((m = k.exec(str)) && m[0]) ranges.push([m.index, m.index + m[0].length]);
+      } else {
+        let p = 0;
+        while ((p = str.indexOf(k, p)) >= 0) { ranges.push([p, p + k.length]); p += k.length; }
+      }
+    }
+    for (const [a, b] of ranges) {
+      const ss = syms.slice(map[a], map[b - 1] + 1);
+      out.push({
+        x0: Math.min(...ss.map(s => s.b.x0)) - pad, y0: Math.min(...ss.map(s => s.b.y0)) - pad,
+        x1: Math.max(...ss.map(s => s.b.x1)) + pad, y1: Math.max(...ss.map(s => s.b.y1)) + pad,
+        auto: true, on: true
+      });
+    }
+  }
+  rects = rects.filter(r => !r.auto).concat(out);
+  render(true);
+  if (!keys.length) setStatus(afterOcr ? '認識できました。隠したい言葉を入力してください。' : '隠したい言葉を入力してください。');
+  else setStatus(out.length ? `${out.length} か所が見つかりました。` : '一致する文字が見つかりません。表記を変えるか、ドラッグで範囲を指定してください。');
+}
+
+/* ---- 描画 ---- */
+function render(preview){
+  if (!img) return;
+  ctx.drawImage(img, 0, 0);
+  const mode = document.querySelector('input[name=mode]:checked').value;
+  const bs = +$('bs').value;
+  for (const r of rects) {
+    if (!r.on) continue;
+    const x = Math.max(0, Math.floor(r.x0)), y = Math.max(0, Math.floor(r.y0));
+    const w = Math.min(cv.width, Math.ceil(r.x1)) - x, h = Math.min(cv.height, Math.ceil(r.y1)) - y;
+    if (w < 1 || h < 1) continue;
+    if (mode === 'black') { ctx.fillStyle = '#000'; ctx.fillRect(x, y, w, h); }
+    else {
+      const t = document.createElement('canvas');
+      t.width = Math.max(1, Math.ceil(w / bs)); t.height = Math.max(1, Math.ceil(h / bs));
+      t.getContext('2d').drawImage(img, x, y, w, h, 0, 0, t.width, t.height);
+      ctx.imageSmoothingEnabled = false;
+      ctx.drawImage(t, 0, 0, t.width, t.height, x, y, w, h);
+      ctx.imageSmoothingEnabled = true;
+    }
+  }
+  if (preview) {
+    ctx.lineWidth = Math.max(2, cv.width / 500);
+    for (const r of rects) {
+      ctx.setLineDash(r.on ? [] : [8, 6]);
+      ctx.strokeStyle = r.on ? '#2F5BEA' : '#8A93A5';
+      ctx.strokeRect(r.x0, r.y0, r.x1 - r.x0, r.y1 - r.y0);
+    }
+    if (drag && drag.moved) {
+      ctx.setLineDash([6, 4]); ctx.strokeStyle = '#2F5BEA';
+      ctx.strokeRect(drag.x, drag.y, drag.x1 - drag.x, drag.y1 - drag.y);
+    }
+    ctx.setLineDash([]);
+  }
+}
+
+/* ---- 手動操作 ---- */
+function pos(e){
+  const b = cv.getBoundingClientRect();
+  return [(e.clientX - b.left) * cv.width / b.width, (e.clientY - b.top) * cv.height / b.height];
+}
+cv.addEventListener('pointerdown', e => {
+  const [x, y] = pos(e);
+  drag = { x, y, x1: x, y1: y, cx: e.clientX, cy: e.clientY, moved: false };
+  cv.setPointerCapture(e.pointerId);
+});
+cv.addEventListener('pointermove', e => {
+  if (!drag) return;
+  [drag.x1, drag.y1] = pos(e);
+  drag.moved = Math.hypot(e.clientX - drag.cx, e.clientY - drag.cy) > 5;
+  render(true);
+});
+cv.addEventListener('pointerup', () => {
+  if (!drag) return;
+  const d = drag; drag = null;
+  if (d.moved) {
+    rects.push({ x0: Math.min(d.x, d.x1), y0: Math.min(d.y, d.y1), x1: Math.max(d.x, d.x1), y1: Math.max(d.y, d.y1), auto: false, on: true });
+  } else {
+    for (let i = rects.length - 1; i >= 0; i--) {
+      const r = rects[i];
+      if (d.x >= r.x0 && d.x <= r.x1 && d.y >= r.y0 && d.y <= r.y1) {
+        if (r.auto) r.on = !r.on; else rects.splice(i, 1);
+        break;
+      }
+    }
+  }
+  render(true);
+});
+cv.addEventListener('pointercancel', () => { drag = null; render(true); });
+
+/* ---- 保存 ---- */
+$('dl').onclick = () => {
+  render(false);
+  cv.toBlob(b => {
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(b); a.download = 'redacted.png'; a.click();
+    URL.revokeObjectURL(a.href); render(true);
+  }, 'image/png');
+};
+</script>
+</body>
+</html>
