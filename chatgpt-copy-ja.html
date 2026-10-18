@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#f7f4f0">
+<title>ChatGPT会話まるごとコピー（日本語）</title>
+<style>
+:root{color-scheme:light dark;--bg:#f7f4f0;--card:#fff;--ink:#292521;--muted:#6e665e;--accent:#6d4c7d;--line:#e4dcd4}
+@media(prefers-color-scheme:dark){:root{--bg:#171515;--card:#242120;--ink:#f4efeb;--muted:#b9aea6;--accent:#d2b3e1;--line:#3b3430}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Hiragino Kaku Gothic ProN",Meiryo,sans-serif;line-height:1.7}
+main{max-width:720px;margin:auto;padding:26px 17px 52px}
+h1{font-size:1.55rem;line-height:1.4;margin:0 0 10px}
+h2{font-size:1.08rem;margin:0 0 8px}
+p{margin:.55em 0}.lead,.muted,small{color:var(--muted)}
+section{background:var(--card);border:1px solid var(--line);border-radius:15px;padding:17px;margin:16px 0}
+button{border:0;border-radius:10px;padding:12px 15px;background:var(--accent);color:#fff;font-size:1rem;font-weight:700;width:100%;cursor:pointer}
+textarea{width:100%;min-height:125px;margin-top:11px;padding:11px;border:1px solid var(--line);border-radius:10px;background:var(--bg);color:var(--ink);font:12px/1.5 ui-monospace,monospace;overflow-wrap:anywhere;white-space:pre-wrap}
+.step{font-weight:700;color:var(--accent)}.warning{border-left:4px solid #b9853e;padding-left:12px}
+code{overflow-wrap:anywhere}
+</style>
+</head>
+<body>
+<main>
+<h1>ChatGPT会話まるごとコピー</h1>
+<p class="lead">開いているChatGPTの会話から、あなたの発言とChatGPTの返答をまとめて取り出すための、非公式ブックマークレットです。iPhoneのSafariを想定しています。</p>
+<section>
+<p class="step">1. コードをコピーする</p>
+<p>ボタンを押してコードをコピーします。うまくいかない場合は、下のコード欄を長押ししてコピーしてください。</p>
+<button id="copyCode">コードをコピー</button>
+<textarea id="code" readonly aria-label="ブックマークレットのコード" spellcheck="false"></textarea>
+<p id="status" role="status" aria-live="polite" class="muted"></p>
+</section>
+<section>
+<p class="step">2. Safariにブックマークを登録する</p>
+<p>① このページをSafariのブックマークに追加します。</p>
+<p>② ブックマーク一覧を開き、「編集」で今追加したブックマークを選びます。</p>
+<p>③ 名前を「ChatGPT一括コピー」などに変え、URL欄をいったん全部消します。</p>
+<p>④ URL欄に、さきほどコピーしたコードを貼り付けて保存します。先頭が <code>javascript:</code> になっていることを確認してください。</p>
+</section>
+<section>
+<p class="step">3. 会話を取り出す</p>
+<p>① SafariでChatGPTにログインし、保存したい会話を開きます。</p>
+<p>② 長い会話では、可能ならページを上から下までスクロールして、古い発言も読み込ませます。</p>
+<p>③ ブックマーク一覧から「ChatGPT一括コピー」をタップします。画面に抽出件数と本文が表示されます。</p>
+<p>④ 「ユーザー」「パートナー」の表記を必要に応じて変更し、「すべてコピー」または「TXTを保存」を選びます。</p>
+</section>
+<section>
+<h2>改行について</h2>
+<p>ユーザー側・パートナー側それぞれの本文について、段落だけでなく、明示的な改行（br）やリスト・コードブロックなどの区切りも拾うようにしています。台詞と地の文の改行も、ChatGPT画面のHTMLに改行情報がある範囲で保持します。発言ごとの区切りは空行で分け、コピー／TXT保存に反映します。TXTはUTF-8で保存します。</p>
+</section>
+<section class="warning">
+<h2>注意してほしいこと</h2>
+<p>ChatGPTの画面構造が変わった場合や、古い発言がページに読み込まれていない場合は、全件を取得できないことがあります。抽出件数を確認し、本文の最初と最後も必ず確認してください。</p>
+<p>改行の保持は、ChatGPT画面から取得できる表示テキストに基づきます。画面側で既に折りたたまれている内容や、表示用に変換された箇所は完全に復元できない場合があります。</p>
+<p>このページは会話本文を受け取りません。ブックマークレットはChatGPTのページ上で処理し、会話を外部サーバーへ送信しません。コピー対象の会話ページ以外では実行しないでください。</p>
+<p><small>非公式ツールです。iOS/Safariの仕様やChatGPTの画面変更によって動作が異なる場合があります。</small></p>
+</section>
+</main>
+<script>
+const bookmarklet = "javascript:(()=>{try{const old=document.getElementById('gpt-bulk-copy-panel');if(old){old.remove();return}const all=[...document.querySelectorAll('[data-message-author-role=\"user\"],[data-message-author-role=\"assistant\"]')];const nodes=all.filter(n=>!n.parentElement?.closest('[data-message-author-role=\"user\"],[data-message-author-role=\"assistant\"]'));const messages=[];function extractText(root){const c=root.cloneNode(true);c.querySelectorAll('button,svg,nav,[aria-hidden=\"true\"],[data-testid*=\"copy\"],[data-testid*=\"action\"],[role=\"toolbar\"]').forEach(e=>e.remove());const content=c.querySelector('[data-message-content]')||c.querySelector('.markdown')||c;let out='';const blockTags=new Set(['ADDRESS','ARTICLE','ASIDE','BLOCKQUOTE','DD','DIV','DL','DT','FIELDSET','FIGCAPTION','FIGURE','FOOTER','FORM','H1','H2','H3','H4','H5','H6','HEADER','HR','LI','MAIN','OL','P','PRE','SECTION','TABLE','TR','UL']);function walk(node){if(node.nodeType===Node.TEXT_NODE){out+=node.nodeValue.replace(/\\r\\n?/g,'\\n');return}if(node.nodeType!==Node.ELEMENT_NODE)return;const tag=node.tagName;if(tag==='BR'){out+='\\n';return}if(tag==='SCRIPT'||tag==='STYLE')return;const isBlock=blockTags.has(tag);if(isBlock&&out&&!out.endsWith('\\n'))out+='\\n';for(const child of node.childNodes)walk(child);if(isBlock&&!out.endsWith('\\n'))out+='\\n'}walk(content);out=out.replace(/\\r\\n?/g,'\\n').replace(/[ \\t]+\\n/g,'\\n').replace(/\\n[ \\t]*\\n[ \\t]*\\n+/g,'\\n\\n').replace(/^\\n+|\\n+$/g,'');return out}for(const n of nodes){const role=n.getAttribute('data-message-author-role');if(role!=='user'&&role!=='assistant')continue;const text=extractText(n);if(!text)continue;messages.push({role,text})}if(!messages.length){alert('会話本文を見つけられませんでした。ChatGPTの会話画面で実行してください。');return}const p=document.createElement('div');p.id='gpt-bulk-copy-panel';p.style='position:fixed;z-index:2147483647;inset:8px;background:#fff;color:#222;padding:14px;border:2px solid #6d4c7d;border-radius:14px;box-shadow:0 4px 30px #0005;overflow:auto;font:15px/1.6 -apple-system,BlinkMacSystemFont,sans-serif';p.innerHTML='<div style=\"font-weight:700;font-size:18px;margin-bottom:8px\">会話を抽出しました：'+messages.length+'件</div><p style=\"margin:4px 0 10px\">発言者の表記を変更できます。本文の最初と最後、改行も確認してください。</p><label style=\"display:block;font-weight:600;margin:8px 0 3px\" for=\"gpt-bulk-user-label\">ユーザー側の表記</label><input id=\"gpt-bulk-user-label\" value=\"ユーザー\" style=\"width:100%;padding:10px;border:1px solid #bbb;border-radius:8px;font:16px sans-serif\"><label style=\"display:block;font-weight:600;margin:8px 0 3px\" for=\"gpt-bulk-partner-label\">パートナー側の表記</label><input id=\"gpt-bulk-partner-label\" value=\"パートナー\" style=\"width:100%;padding:10px;border:1px solid #bbb;border-radius:8px;font:16px sans-serif\"><div style=\"display:flex;gap:8px;flex-wrap:wrap;margin-top:12px\"><button id=\"gpt-bulk-copy\" style=\"flex:1;min-width:120px;padding:12px;background:#6d4c7d;color:white;border:0;border-radius:8px\">すべてコピー</button><button id=\"gpt-bulk-save\" style=\"flex:1;min-width:120px;padding:12px;background:#365d48;color:white;border:0;border-radius:8px\">TXTを保存</button><button id=\"gpt-bulk-close\" style=\"padding:12px;background:#ddd;color:#222;border:0;border-radius:8px\">閉じる</button></div><textarea id=\"gpt-bulk-text\" style=\"width:100%;height:55vh;margin-top:10px;padding:10px;border:1px solid #bbb;border-radius:8px;font:13px/1.6 ui-monospace,monospace;white-space:pre-wrap\"></textarea>';document.body.appendChild(p);const ta=p.querySelector('#gpt-bulk-text'),userInput=p.querySelector('#gpt-bulk-user-label'),partnerInput=p.querySelector('#gpt-bulk-partner-label');const makeOutput=()=>messages.map(m=>'【'+(m.role==='user'?(userInput.value.trim()||'ユーザー'):(partnerInput.value.trim()||'パートナー'))+'】\\n'+m.text).join('\\n\\n');const refresh=()=>{ta.value=makeOutput()};userInput.addEventListener('input',refresh);partnerInput.addEventListener('input',refresh);refresh();p.querySelector('#gpt-bulk-copy').onclick=async()=>{const out=makeOutput();ta.value=out;try{await navigator.clipboard.writeText(out);alert('改行を含めてコピーしました')}catch(e){ta.focus();ta.select();alert('本文を選択しました。表示されたメニューから「コピー」を選んでください')}};p.querySelector('#gpt-bulk-save').onclick=()=>{const out=makeOutput();ta.value=out;const blob=new Blob(['\\ufeff',out],{type:'text/plain;charset=utf-8'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='ChatGPT会話ログ.txt';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1500)};p.querySelector('#gpt-bulk-close').onclick=()=>p.remove()}catch(e){alert('処理中にエラーが発生しました：'+e.message)}})();";
+document.getElementById('code').value = bookmarklet;
+document.getElementById('copyCode').addEventListener('click', async () => {
+ const status = document.getElementById('status');
+ try {
+  await navigator.clipboard.writeText(bookmarklet);
+  status.textContent = 'コードをコピーしました。SafariのブックマークURL欄に貼り付けてください。';
+ } catch (e) {
+  const area = document.getElementById('code');
+  area.focus(); area.select();
+  status.textContent = '自動コピーできませんでした。コード欄を長押しして「コピー」を選んでください。';
+ }
+});
+</script>
+</body>
+</html>
