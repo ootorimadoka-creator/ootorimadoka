@@ -1,0 +1,444 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>鍵つきテキスト保管庫</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@600;700&family=Zen+Kaku+Gothic+New:wght@400;500;700&display=swap">
+<style>
+/* Layout: 左に題名リスト、右に本文エディタ。狭い画面ではリストと本文を切り替える。共有リンクで開いた人には本文だけの閲覧画面を出す。 */
+:root{
+  --bg:#e9edf2; --surface:#f8fafc; --line:#cfd7e1; --ink:#18212d; --mute:#5d6b7c;
+  --accent:#27467a; --accent-ink:#ffffff; --soft:#dde5f0; --danger:#a1342a; --ok:#2c6b4f;
+  --f-display:"Shippori Mincho","Hiragino Mincho ProN","Yu Mincho",serif;
+  --f-body:"Zen Kaku Gothic New","Hiragino Sans","Yu Gothic",sans-serif;
+  color-scheme:light;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#0f141b; --surface:#171e28; --line:#2b3645; --ink:#e4e9f0; --mute:#97a4b5;
+  --accent:#8fb0ea; --accent-ink:#0f141b; --soft:#202b3a; --danger:#ef8f84; --ok:#7fd0a7; color-scheme:dark;}}
+:root[data-theme="dark"]{
+  --bg:#0f141b; --surface:#171e28; --line:#2b3645; --ink:#e4e9f0; --mute:#97a4b5;
+  --accent:#8fb0ea; --accent-ink:#0f141b; --soft:#202b3a; --danger:#ef8f84; --ok:#7fd0a7; color-scheme:dark;}
+
+*{box-sizing:border-box}
+html,body{height:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.7 var(--f-body);
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));
+  padding-block:max(16px,env(safe-area-inset-top,0px)) max(16px,env(safe-area-inset-bottom,0px))}
+[hidden]{display:none!important}
+button,input,textarea{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+
+h1,h2{font-family:var(--f-display);margin:0;font-weight:700;text-wrap:balance}
+.btn{border:1px solid var(--line);background:var(--surface);padding:8px 14px;border-radius:6px;cursor:pointer;min-height:40px}
+.btn:hover{background:var(--soft)}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-ink);font-weight:700}
+.btn.primary:hover{filter:brightness(1.08)}
+.btn.danger{color:var(--danger)}
+.btn.ghost{background:transparent;border-color:transparent;color:var(--mute)}
+.field{width:100%;border:1px solid var(--line);background:var(--surface);border-radius:6px;padding:10px 12px;min-height:44px}
+.msg{min-height:1.6em;margin:0;font-size:13px;color:var(--mute)}
+.msg.err{color:var(--danger)}
+.msg.ok{color:var(--ok)}
+
+/* ロック画面 */
+.gate{max-width:420px;margin:8vh auto 0;display:flex;flex-direction:column;gap:14px}
+.gate h1{font-size:28px;letter-spacing:.04em}
+.gate p{margin:0;color:var(--mute);font-size:14px}
+.gate form{display:flex;flex-direction:column;gap:10px}
+.keyline{height:3px;width:56px;background:var(--accent);border-radius:2px}
+details.restore{border-top:1px solid var(--line);padding-top:12px;font-size:13px;color:var(--mute)}
+details.restore summary{cursor:pointer}
+details.restore textarea{margin:10px 0;min-height:96px;font-size:12px;font-family:ui-monospace,Menlo,monospace}
+
+/* アプリ本体 */
+.app{display:grid;grid-template-columns:300px minmax(0,1fr);gap:16px;height:100%;min-height:0;max-width:1180px;margin:0 auto}
+.pane{background:var(--surface);border:1px solid var(--line);border-radius:10px;display:flex;flex-direction:column;min-height:0;min-width:0}
+.pane-head{display:flex;align-items:center;gap:8px;padding:12px;border-bottom:1px solid var(--line);flex-wrap:wrap}
+.pane-head h2{font-size:18px;flex:1;min-width:0}
+.list{overflow:auto;flex:1;padding:6px;display:flex;flex-direction:column;gap:2px}
+.item{display:block;width:100%;text-align:left;border:0;background:transparent;padding:10px 12px;border-radius:6px;cursor:pointer}
+.item:hover{background:var(--soft)}
+.item[aria-current="true"]{background:var(--soft);box-shadow:inset 3px 0 0 var(--accent)}
+.item b{display:block;font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.item small{color:var(--mute);font-size:12px}
+.empty{padding:24px 16px;color:var(--mute);font-size:14px}
+.search{margin:8px 12px 0}
+.editor{padding:12px;display:flex;flex-direction:column;gap:10px;flex:1;min-height:0}
+.title-in{font-family:var(--f-display);font-size:22px;font-weight:700}
+.body-in{flex:1;min-height:220px;resize:none;line-height:1.85}
+.bar{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.bar .grow{flex:1}
+.sharebox{border:1px solid var(--line);border-radius:8px;padding:12px;display:flex;flex-direction:column;gap:8px;background:var(--bg)}
+.sharebox input{font-size:12px;font-family:ui-monospace,Menlo,monospace}
+.sharebox p{margin:0;font-size:12.5px;color:var(--mute)}
+.back{display:none}
+
+/* 共有ページ */
+.shared{max-width:720px;margin:4vh auto 0;display:flex;flex-direction:column;gap:16px}
+.shared .tag{font-size:12px;letter-spacing:.12em;color:var(--mute)}
+.shared h1{font-size:30px;line-height:1.4}
+.shared .text{white-space:pre-wrap;overflow-wrap:anywhere;background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:20px;line-height:1.95}
+
+@media (max-width:760px){
+  .app{grid-template-columns:minmax(0,1fr)}
+  .app[data-view="list"] .editor-pane{display:none}
+  .app[data-view="edit"] .list-pane{display:none}
+  .back{display:inline-flex;align-items:center}
+  .gate{margin-top:4vh}
+}
+@media (prefers-reduced-motion:no-preference){.btn{transition:background .15s}}
+</style>
+</head>
+<body>
+
+<!-- ロック画面 -->
+<main class="gate" id="gate" hidden>
+  <div class="keyline"></div>
+  <h1 id="gateTitle">鍵つきテキスト保管庫</h1>
+  <p id="gateLead"></p>
+  <form id="gateForm" autocomplete="off">
+    <input class="field" id="pw" type="password" placeholder="パスワード" autocomplete="current-password" aria-label="パスワード">
+    <input class="field" id="pw2" type="password" placeholder="もう一度パスワードを入力" autocomplete="new-password" aria-label="パスワード確認" hidden>
+    <button class="btn primary" id="gateBtn" type="submit">開く</button>
+    <p class="msg" id="gateMsg" role="status"></p>
+  </form>
+  <details class="restore" id="restore">
+    <summary>バックアップから復元する</summary>
+    <textarea class="field" id="restoreText" placeholder="コピーしておいたバックアップの文字列を貼り付け" aria-label="バックアップ文字列"></textarea>
+    <button class="btn" id="restoreBtn" type="button">復元する</button>
+    <p class="msg" id="restoreMsg"></p>
+  </details>
+</main>
+
+<!-- 本体 -->
+<div class="app" id="app" data-view="list" hidden>
+  <section class="pane list-pane" aria-label="保管した題名">
+    <div class="pane-head">
+      <h2>保管庫</h2>
+      <button class="btn primary" id="newBtn" type="button">新規</button>
+      <button class="btn ghost" id="lockBtn" type="button">ロック</button>
+    </div>
+    <input class="field search" id="search" type="search" placeholder="題名で絞り込み" aria-label="題名で絞り込み">
+    <div class="list" id="list"></div>
+    <div class="pane-head" style="border-top:1px solid var(--line);border-bottom:0">
+      <button class="btn ghost" id="backupBtn" type="button">バックアップ</button>
+    </div>
+  </section>
+
+  <section class="pane editor-pane" aria-label="本文">
+    <div class="pane-head">
+      <button class="btn ghost back" id="backBtn" type="button">← 一覧</button>
+      <span class="msg" id="status" style="flex:1;text-align:right" role="status"></span>
+    </div>
+    <div class="editor" id="editor" hidden>
+      <input class="field title-in" id="title" placeholder="題名" aria-label="題名" maxlength="120">
+      <textarea class="field body-in" id="body" placeholder="ここに長文を書く" aria-label="本文"></textarea>
+      <div class="bar">
+        <button class="btn" id="shareBtn" type="button">共有リンクをつくる</button>
+        <span class="grow"></span>
+        <button class="btn danger" id="delBtn" type="button">削除</button>
+      </div>
+      <div class="sharebox" id="shareBox" hidden>
+        <input class="field" id="shareUrl" readonly aria-label="共有リンク">
+        <div class="bar">
+          <button class="btn primary" id="copyShare" type="button">リンクをコピー</button>
+          <span class="msg" id="shareMsg" role="status"></span>
+        </div>
+        <p id="shareNote"></p>
+      </div>
+    </div>
+    <div class="empty" id="noSel">左の一覧から選ぶか、「新規」で書き始めます。</div>
+    <div class="editor" id="backupBox" hidden>
+      <h2 style="font-size:18px">バックアップ</h2>
+      <p class="msg">この文字列は暗号化されています。パスワードがないと読めません。ブラウザのデータを消すと保管庫も消えるので、メモ帳などに貼って残してください。</p>
+      <textarea class="field" id="backupText" readonly style="min-height:160px;font-size:12px;font-family:ui-monospace,Menlo,monospace" aria-label="バックアップ文字列"></textarea>
+      <div class="bar"><button class="btn primary" id="copyBackup" type="button">コピー</button><span class="msg" id="backupMsg"></span></div>
+    </div>
+  </section>
+</div>
+
+<!-- 共有で開いたとき -->
+<main class="shared" id="shared" hidden>
+  <div class="tag">共有されたテキスト</div>
+  <h1 id="sTitle"></h1>
+  <div class="text" id="sText"></div>
+  <div class="bar">
+    <button class="btn primary" id="sCopy" type="button">本文をコピー</button>
+    <button class="btn ghost" id="sHome" type="button">自分の保管庫を開く</button>
+    <span class="msg" id="sMsg"></span>
+  </div>
+</main>
+
+<script>
+(function(){
+"use strict";
+const LS="textVault.v1";
+const $=id=>document.getElementById(id);
+const enc=new TextEncoder(), dec=new TextDecoder();
+
+/* ---------- base64 ---------- */
+function toB64(u8){let s="";for(let i=0;i<u8.length;i+=0x8000)s+=String.fromCharCode.apply(null,u8.subarray(i,i+0x8000));return btoa(s)}
+function fromB64(b){const s=atob(b),u=new Uint8Array(s.length);for(let i=0;i<s.length;i++)u[i]=s.charCodeAt(i);return u}
+const toUrl=u8=>toB64(u8).replace(/\+/g,"-").replace(/\//g,"_").replace(/=+$/,"");
+const fromUrl=s=>{s=s.replace(/-/g,"+").replace(/_/g,"/");while(s.length%4)s+="=";return fromB64(s)};
+
+/* ---------- 暗号 ---------- */
+async function deriveKey(pw,salt){
+  const base=await crypto.subtle.importKey("raw",enc.encode(pw),"PBKDF2",false,["deriveKey"]);
+  return crypto.subtle.deriveKey({name:"PBKDF2",salt,iterations:300000,hash:"SHA-256"},base,{name:"AES-GCM",length:256},false,["encrypt","decrypt"]);
+}
+async function seal(key,obj){
+  const iv=crypto.getRandomValues(new Uint8Array(12));
+  const ct=new Uint8Array(await crypto.subtle.encrypt({name:"AES-GCM",iv},key,enc.encode(JSON.stringify(obj))));
+  const out=new Uint8Array(12+ct.length);out.set(iv);out.set(ct,12);return toB64(out);
+}
+async function open(key,b64){
+  const all=fromB64(b64);
+  const pt=await crypto.subtle.decrypt({name:"AES-GCM",iv:all.slice(0,12)},key,all.slice(12));
+  return JSON.parse(dec.decode(pt));
+}
+
+/* ---------- 保存先 ---------- */
+function readStore(){try{const r=localStorage.getItem(LS);return r?JSON.parse(r):null}catch(e){return null}}
+function writeStore(o){try{localStorage.setItem(LS,JSON.stringify(o));return true}catch(e){return false}}
+
+let key=null, salt=null, notes=[], curId=null, dirty=false, timer=null, memStore=null;
+
+async function persist(){
+  const data=await seal(key,{notes});
+  const st={v:1,salt:toB64(salt),data};
+  memStore=st;
+  const ok=writeStore(st);
+  return ok;
+}
+
+/* ---------- ロック画面 ---------- */
+function showOnly(name){["gate","app","shared"].forEach(n=>$(n).hidden=(n!==name))}
+let setupMode=false;
+function showGate(){
+  showOnly("gate");
+  const st=readStore();
+  setupMode=!st;
+  $("pw").value="";$("pw2").value="";$("gateMsg").textContent="";$("gateMsg").className="msg";
+  $("pw2").hidden=!setupMode;
+  $("gateBtn").textContent=setupMode?"この パスワードで保管庫をつくる":"開く";
+  $("gateBtn").textContent=setupMode?"パスワードを決めて始める":"開く";
+  $("gateLead").textContent=setupMode
+    ? "最初にパスワードを決めます。忘れると中身は誰にも読めなくなります。"
+    : "パスワードを入力すると、保管したテキストが開きます。";
+  $("pw").setAttribute("autocomplete",setupMode?"new-password":"current-password");
+  $("pw").focus();
+}
+$("gateForm").addEventListener("submit",async e=>{
+  e.preventDefault();
+  const pw=$("pw").value, msg=$("gateMsg");
+  msg.className="msg";
+  if(!pw){msg.textContent="パスワードを入力してください。";msg.className="msg err";return}
+  if(!crypto||!crypto.subtle){msg.textContent="このブラウザでは暗号化が使えません。https か file で開いてください。";msg.className="msg err";return}
+  $("gateBtn").disabled=true;msg.textContent="確認中…";
+  try{
+    if(setupMode){
+      if(pw.length<6){throw new Error("short")}
+      if(pw!==$("pw2").value){throw new Error("mismatch")}
+      salt=crypto.getRandomValues(new Uint8Array(16));
+      key=await deriveKey(pw,salt);notes=[];
+      await persist();
+    }else{
+      const st=readStore();
+      salt=fromB64(st.salt);
+      const k=await deriveKey(pw,salt);
+      const obj=await open(k,st.data);
+      key=k;notes=obj.notes||[];
+    }
+    enterApp();
+  }catch(err){
+    if(err.message==="short")msg.textContent="パスワードは6文字以上にしてください。";
+    else if(err.message==="mismatch")msg.textContent="確認用のパスワードが一致しません。";
+    else msg.textContent="パスワードが違います。";
+    msg.className="msg err";
+  }finally{$("gateBtn").disabled=false;$("pw").value="";$("pw2").value=""}
+});
+
+/* バックアップ復元 */
+$("restoreBtn").addEventListener("click",()=>{
+  const m=$("restoreMsg");
+  try{
+    const o=JSON.parse($("restoreText").value.trim());
+    if(!o||!o.salt||!o.data)throw 0;
+    if(!writeStore(o))throw 1;
+    m.textContent="復元しました。元のパスワードで開いてください。";m.className="msg ok";
+    $("restoreText").value="";
+    setTimeout(showGate,900);
+  }catch(e){m.textContent="読み取れませんでした。文字列をすべて貼り付けたか確認してください。";m.className="msg err"}
+});
+
+/* ---------- アプリ ---------- */
+function enterApp(){
+  showOnly("app");curId=null;
+  $("search").value="";
+  renderList();showEditor(null);
+  $("app").dataset.view="list";
+  setStatus("");
+}
+function lock(){
+  flush().finally(()=>{key=null;notes=[];curId=null;showGate()});
+}
+$("lockBtn").addEventListener("click",lock);
+
+function fmt(t){const d=new Date(t);return d.getFullYear()+"/"+(d.getMonth()+1)+"/"+d.getDate()+" "+String(d.getHours()).padStart(2,"0")+":"+String(d.getMinutes()).padStart(2,"0")}
+function renderList(){
+  const q=$("search").value.trim().toLowerCase();
+  const box=$("list");box.textContent="";
+  const shown=notes.slice().sort((a,b)=>b.updated-a.updated).filter(n=>!q||(n.title||"").toLowerCase().includes(q));
+  if(!shown.length){
+    const d=document.createElement("div");d.className="empty";
+    d.textContent=notes.length?"該当する題名がありません。":"まだ何もありません。「新規」から最初の1件をつくります。";
+    box.appendChild(d);return;
+  }
+  shown.forEach(n=>{
+    const b=document.createElement("button");b.type="button";b.className="item";
+    if(n.id===curId)b.setAttribute("aria-current","true");
+    const t=document.createElement("b");t.textContent=n.title||"（題名なし）";
+    const s=document.createElement("small");s.textContent=fmt(n.updated)+" ・ "+n.body.length.toLocaleString()+"文字";
+    b.append(t,s);b.addEventListener("click",()=>select(n.id));box.appendChild(b);
+  });
+}
+function showEditor(n){
+  $("backupBox").hidden=true;
+  $("shareBox").hidden=true;$("shareMsg").textContent="";
+  if(!n){$("editor").hidden=true;$("noSel").hidden=false;return}
+  $("noSel").hidden=true;$("editor").hidden=false;
+  $("title").value=n.title;$("body").value=n.body;
+}
+async function select(id){
+  await flush();
+  curId=id;const n=notes.find(x=>x.id===id);
+  showEditor(n);renderList();
+  $("app").dataset.view="edit";
+  setStatus("");
+}
+$("newBtn").addEventListener("click",async()=>{
+  await flush();
+  const n={id:Date.now().toString(36)+Math.random().toString(36).slice(2,6),title:"",body:"",updated:Date.now()};
+  notes.push(n);curId=n.id;
+  showEditor(n);renderList();
+  $("app").dataset.view="edit";
+  $("title").focus();
+  schedule();
+});
+$("backBtn").addEventListener("click",async()=>{await flush();$("app").dataset.view="list";renderList()});
+$("search").addEventListener("input",renderList);
+
+function setStatus(t,cls){const s=$("status");s.textContent=t;s.className="msg"+(cls?" "+cls:"")}
+function schedule(){dirty=true;setStatus("入力中…");clearTimeout(timer);timer=setTimeout(flush,700)}
+async function flush(){
+  clearTimeout(timer);
+  if(!dirty||!key)return;
+  dirty=false;
+  const n=notes.find(x=>x.id===curId);
+  if(n){n.title=$("title").value;n.body=$("body").value;n.updated=Date.now()}
+  try{
+    const ok=await persist();
+    if(ok){const d=new Date();setStatus("保存しました "+String(d.getHours()).padStart(2,"0")+":"+String(d.getMinutes()).padStart(2,"0"),"ok")}
+    else setStatus("このブラウザに保存できません。バックアップを取ってください。","err");
+  }catch(e){setStatus("保存に失敗しました。","err")}
+  renderList();
+}
+$("title").addEventListener("input",schedule);
+$("body").addEventListener("input",schedule);
+window.addEventListener("pagehide",()=>{flush()});
+
+/* 削除（ページ内で確認） */
+let delArmed=false,delTimer=null;
+$("delBtn").addEventListener("click",async()=>{
+  const b=$("delBtn");
+  if(!delArmed){delArmed=true;b.textContent="もう一度押すと削除";clearTimeout(delTimer);
+    delTimer=setTimeout(()=>{delArmed=false;b.textContent="削除"},3500);return}
+  delArmed=false;b.textContent="削除";clearTimeout(delTimer);
+  notes=notes.filter(x=>x.id!==curId);curId=null;dirty=false;
+  await persist();showEditor(null);renderList();$("app").dataset.view="list";setStatus("削除しました");
+});
+
+/* バックアップ表示 */
+$("backupBtn").addEventListener("click",async()=>{
+  await flush();
+  const st=readStore()||memStore;
+  $("editor").hidden=true;$("noSel").hidden=true;$("backupBox").hidden=false;
+  $("backupText").value=st?JSON.stringify(st):"";
+  $("backupMsg").textContent="";
+  $("app").dataset.view="edit";
+});
+async function copyText(text,msgEl,done,inputEl){
+  try{await navigator.clipboard.writeText(text);msgEl.textContent=done;msgEl.className="msg ok"}
+  catch(e){if(inputEl){inputEl.focus();inputEl.select()}msgEl.textContent="選択しました。コピーしてください。";msgEl.className="msg"}
+}
+$("copyBackup").addEventListener("click",()=>copyText($("backupText").value,$("backupMsg"),"コピーしました",$("backupText")));
+
+/* ---------- 共有リンク ---------- */
+async function pack(obj){
+  const raw=enc.encode(JSON.stringify(obj));
+  if(typeof CompressionStream==="function"){
+    try{
+      const cs=new CompressionStream("deflate-raw");const w=cs.writable.getWriter();w.write(raw);w.close();
+      const out=new Uint8Array(await new Response(cs.readable).arrayBuffer());
+      return "s."+toUrl(out);
+    }catch(e){}
+  }
+  return "r."+toUrl(raw);
+}
+async function unpack(h){
+  const kind=h.slice(0,2),bytes=fromUrl(h.slice(2));
+  let raw=bytes;
+  if(kind==="s."){
+    const ds=new DecompressionStream("deflate-raw");const w=ds.writable.getWriter();w.write(bytes);w.close();
+    raw=new Uint8Array(await new Response(ds.readable).arrayBuffer());
+  }
+  return JSON.parse(dec.decode(raw));
+}
+$("shareBtn").addEventListener("click",async()=>{
+  await flush();
+  const n=notes.find(x=>x.id===curId);if(!n)return;
+  const h=await pack({t:n.title||"（題名なし）",b:n.body});
+  const base=location.href.split("#")[0];
+  const url=base+"#"+h;
+  $("shareUrl").value=url;$("shareBox").hidden=false;$("shareMsg").textContent="";
+  const len=url.length.toLocaleString();
+  let note="このリンクを開いた人は、パスワードなしで題名と本文を読めます。リンクの長さは約"+len+"文字です。この時点の内容が入っていて、あとで書き換えても送ったリンクは変わりません。";
+  if(location.protocol==="file:")note+=" いまはファイルとして開いているため、このリンクはこの端末でしか開けません。このHTMLをWeb上（GitHub Pagesなど）に置くと、相手の端末でも開けます。";
+  if(url.length>100000)note+=" 長いリンクはLINEやメールなど送り先によっては途中で切れます。";
+  $("shareNote").textContent=note;
+});
+$("copyShare").addEventListener("click",()=>copyText($("shareUrl").value,$("shareMsg"),"コピーしました",$("shareUrl")));
+
+/* ---------- 共有ページ ---------- */
+async function showShared(h){
+  try{
+    const o=await unpack(h);
+    showOnly("shared");
+    $("sTitle").textContent=o.t||"（題名なし）";
+    $("sText").textContent=o.b||"";
+    document.title=(o.t||"共有テキスト")+" | 鍵つきテキスト保管庫";
+    return true;
+  }catch(e){return false}
+}
+$("sCopy").addEventListener("click",()=>copyText($("sText").textContent,$("sMsg"),"コピーしました"));
+$("sHome").addEventListener("click",()=>{
+  history.replaceState(null,"",location.href.split("#")[0]);
+  document.title="鍵つきテキスト保管庫";
+  showGate();
+});
+
+/* ---------- 起動 ---------- */
+(async function start(){
+  const h=location.hash.slice(1);
+  if(/^[sr]\.[A-Za-z0-9_-]+$/.test(h)){
+    if(await showShared(h))return;
+  }
+  showGate();
+})();
+})();
+</script>
+</body>
+</html>
