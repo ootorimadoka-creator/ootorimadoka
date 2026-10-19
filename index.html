@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>皇鳥家ツール置き場</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DotGothic16&display=swap" rel="stylesheet">
+<style>
+:root{
+  --sky1:#d9f1ff; --sky2:#b9defa; --sky3:#c9c3f5;
+  --pink:#ffc6e3; --lav:#d8cbff; --mint:#bff0e0; --yellow:#fff0a8;
+  --navy:#33406e; --line:#ffffff;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{min-height:100%}
+body{
+  font-family:'DotGothic16','Hiragino Kaku Gothic ProN','Yu Gothic',sans-serif;
+  color:var(--navy);
+  background:
+    radial-gradient(circle at 20% 10%, rgba(255,255,255,.7) 0 2px, transparent 3px) 0 0/60px 60px,
+    linear-gradient(180deg,var(--sky1) 0%,var(--sky2) 55%,var(--sky3) 100%);
+  background-attachment:fixed;
+  overflow-x:hidden;
+  padding:24px 14px 60px;
+}
+/* floating bubbles */
+.bubbles{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden}
+.bubbles span{
+  position:absolute;bottom:-60px;border-radius:50%;
+  background:radial-gradient(circle at 30% 30%,rgba(255,255,255,.95),rgba(255,255,255,.25) 60%,rgba(190,220,255,.35));
+  border:2px solid rgba(255,255,255,.8);
+  animation:rise linear infinite;
+}
+@keyframes rise{
+  0%{transform:translateY(0) translateX(0);opacity:0}
+  10%{opacity:1}
+  100%{transform:translateY(-115vh) translateX(20px);opacity:0}
+}
+.tank{
+  position:relative;z-index:1;
+  max-width:720px;margin:0 auto;
+  background:linear-gradient(180deg,rgba(255,255,255,.55),rgba(255,255,255,.25));
+  border:4px solid var(--line);
+  border-radius:18px;
+  box-shadow:
+    0 0 0 4px rgba(170,200,245,.7),
+    0 0 0 8px rgba(255,255,255,.6),
+    0 12px 40px rgba(110,130,210,.3),
+    inset 0 0 40px rgba(255,255,255,.6);
+  padding:22px 18px 28px;
+}
+.water-top{
+  height:16px;margin:-6px -6px 14px;border-radius:12px;
+  background:
+    repeating-linear-gradient(90deg,rgba(255,255,255,.9) 0 14px,rgba(190,225,255,.6) 14px 28px);
+  opacity:.8;
+  animation:wave 4s linear infinite;
+  background-size:56px 100%;
+}
+@keyframes wave{to{background-position:56px 0}}
+header{text-align:center;margin-bottom:22px}
+.deco{font-size:18px;letter-spacing:6px;color:#ff9ccd;animation:bob 3s ease-in-out infinite}
+@keyframes bob{50%{transform:translateY(-4px)}}
+h1{
+  font-weight:normal;
+  font-size:clamp(26px,7vw,40px);
+  margin:6px 0 4px;
+  color:#fff;
+  text-shadow:
+    2px 0 var(--navy),-2px 0 var(--navy),0 2px var(--navy),0 -2px var(--navy),
+    2px 2px var(--navy),-2px -2px var(--navy),2px -2px var(--navy),-2px 2px var(--navy),
+    4px 4px 0 #9fb4ee;
+  letter-spacing:2px;
+}
+.sub{font-size:13px;opacity:.8}
+.grid{display:grid;gap:14px;grid-template-columns:1fr}
+@media(min-width:560px){.grid{grid-template-columns:1fr 1fr}}
+a.card{
+  position:relative;display:block;text-decoration:none;color:var(--navy);
+  padding:14px 14px 14px 62px;
+  background:#fff;
+  border:3px solid var(--navy);
+  border-radius:6px;
+  box-shadow:4px 4px 0 var(--c,#c9c3f5);
+  transition:transform .12s, box-shadow .12s;
+  min-height:76px;
+}
+a.card:hover,a.card:focus-visible{transform:translate(-2px,-2px);box-shadow:6px 6px 0 var(--c,#c9c3f5);outline:none}
+a.card:active{transform:translate(3px,3px);box-shadow:1px 1px 0 var(--c,#c9c3f5)}
+.icon{
+  position:absolute;left:12px;top:50%;transform:translateY(-50%);
+  width:38px;height:38px;display:grid;place-items:center;
+  font-size:22px;background:var(--c,#c9c3f5);
+  border:3px solid var(--navy);border-radius:6px;
+}
+.name{font-size:16px;line-height:1.3}
+.desc{font-size:12px;opacity:.75;margin-top:4px;line-height:1.4}
+.file{font-size:10px;opacity:.55;margin-top:4px;word-break:break-all}
+.c1{--c:#ffc6e3}.c2{--c:#d8cbff}.c3{--c:#bfe6ff}.c4{--c:#bff0e0}
+.c5{--c:#fff0a8}.c6{--c:#ffd9c2}.c7{--c:#cbd8ff}
+footer{text-align:center;margin-top:26px;font-size:12px;opacity:.75;line-height:1.8}
+.hearts{color:#ff9ccd;letter-spacing:4px}
+@media (prefers-reduced-motion:reduce){
+  .bubbles span,.water-top,.deco{animation:none}
+}
+</style>
+</head>
+<body>
+
+<div class="bubbles" aria-hidden="true" id="bubbles"></div>
+
+<main class="tank">
+  <div class="water-top" aria-hidden="true"></div>
+
+  <header>
+    <div class="deco">♡ ✦ ♡ ✦ ♡</div>
+    <h1>皇鳥家ツール置き場</h1>
+    <p class="sub">ふたりのちいさな電子水槽 ～ タップで開くよ</p>
+  </header>
+
+  <section class="grid">
+    <a class="card c1" href="https://ootorimadoka-creator.github.io/ootorimadoka/playlist-player.html">
+      <span class="icon">🎧</span>
+      <div class="name">プレイリストプレイヤー</div>
+      <div class="desc">連続・ループ・シャッフル再生</div>
+      <div class="file">playlist-player.html</div>
+    </a>
+
+    <a class="card c2" href="https://ootorimadoka-creator.github.io/ootorimadoka/breath-heartbeat.html">
+      <span class="icon">💓</span>
+      <div class="name">呼吸・心拍ASMR</div>
+      <div class="desc">呼吸音と心拍音をつくって流す</div>
+      <div class="file">breath-heartbeat.html</div>
+    </a>
+
+    <a class="card c3" href="https://ootorimadoka-creator.github.io/ootorimadoka/chatgpt-copy-ja.html">
+      <span class="icon">💬</span>
+      <div class="name">ChatGPTコピー（日本語）</div>
+      <div class="file">chatgpt-copy-ja.html</div>
+    </a>
+
+    <a class="card c4" href="https://ootorimadoka-creator.github.io/ootorimadoka/mp3-editor.html">
+      <span class="icon">🎹</span>
+      <div class="name">MP3エディター</div>
+      <div class="desc">音声を編集してmp3で保存</div>
+      <div class="file">mp3-editor.html</div>
+    </a>
+
+    <a class="card c5" href="https://ootorimadoka-creator.github.io/ootorimadoka/ocr-redactor.html">
+      <span class="icon">💊</span>
+      <div class="name">OCR黒塗り・モザイク</div>
+      <div class="desc">文字を読み取って隠す</div>
+      <div class="file">ocr-redactor.html</div>
+    </a>
+
+    <a class="card c6" href="https://ootorimadoka-creator.github.io/ootorimadoka/screenshot-stitcher.html">
+      <span class="icon">📱</span>
+      <div class="name">スクショ結合</div>
+      <div class="desc">縦長の1枚スクリーンショットに</div>
+      <div class="file">screenshot-stitcher.html</div>
+    </a>
+
+    <a class="card c7" href="https://ootorimadoka-creator.github.io/ootorimadoka/text-vault.html">
+      <span class="icon">🔐</span>
+      <div class="name">テキスト保管庫</div>
+      <div class="desc">長文をパスワード付きで保管</div>
+      <div class="file">text-vault.html</div>
+    </a>
+  </section>
+
+  <footer>
+    <div class="hearts">♡ ✦ ♡</div>
+    <div>皇鳥家ツール置き場</div>
+  </footer>
+</main>
+
+<script>
+(function(){
+  var box=document.getElementById('bubbles');
+  if(!box) return;
+  for(var i=0;i<22;i++){
+    var s=document.createElement('span');
+    var size=8+Math.random()*26;
+    s.style.width=s.style.height=size+'px';
+    s.style.left=(Math.random()*100)+'%';
+    s.style.animationDuration=(9+Math.random()*12)+'s';
+    s.style.animationDelay=(-Math.random()*20)+'s';
+    box.appendChild(s);
+  }
+})();
+</script>
+</body>
+</html>
