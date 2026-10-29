@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ChatGPTコピー ♡ 電子水槽</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DotGothic16&display=swap" rel="stylesheet">
+<style>
+:root{--sky1:#d9f1ff;--sky2:#b9defa;--sky3:#c9c3f5;--pink:#ffc6e3;--lav:#d8cbff;--mint:#bff0e0;--yellow:#fff0a8;--navy:#33406e}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'DotGothic16','Hiragino Kaku Gothic ProN','Yu Gothic',sans-serif;color:var(--navy);line-height:1.7;min-height:100vh;padding:24px 14px 60px;overflow-x:hidden;background:linear-gradient(180deg,var(--sky1) 0%,var(--sky2) 55%,var(--sky3) 100%);background-attachment:fixed}
+.bubbles{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden}
+.bubbles span{position:absolute;bottom:-60px;border-radius:50%;background:radial-gradient(circle at 30% 30%,rgba(255,255,255,.95),rgba(255,255,255,.25) 60%,rgba(190,220,255,.35));border:2px solid rgba(255,255,255,.8);animation:rise linear infinite}
+@keyframes rise{0%{transform:translateY(0);opacity:0}10%{opacity:1}100%{transform:translateY(-115vh) translateX(20px);opacity:0}}
+.tank{position:relative;z-index:1;max-width:720px;margin:0 auto;background:linear-gradient(180deg,rgba(255,255,255,.55),rgba(255,255,255,.25));border:4px solid #fff;border-radius:18px;box-shadow:0 0 0 4px rgba(170,200,245,.7),0 0 0 8px rgba(255,255,255,.6),0 12px 40px rgba(110,130,210,.3),inset 0 0 40px rgba(255,255,255,.6);padding:22px 18px 28px}
+.water-top{height:16px;margin:-6px -6px 14px;border-radius:12px;background:repeating-linear-gradient(90deg,rgba(255,255,255,.9) 0 14px,rgba(190,225,255,.6) 14px 28px);background-size:56px 100%;opacity:.8;animation:wave 4s linear infinite}
+@keyframes wave{to{background-position:56px 0}}
+header{text-align:center;margin-bottom:18px}
+.deco{font-size:18px;letter-spacing:6px;color:#ff9ccd}
+h1{font-weight:normal;font-size:clamp(24px,6.5vw,36px);margin:6px 0 4px;color:#fff;letter-spacing:2px;text-shadow:2px 0 var(--navy),-2px 0 var(--navy),0 2px var(--navy),0 -2px var(--navy),2px 2px var(--navy),-2px -2px var(--navy),2px -2px var(--navy),-2px 2px var(--navy),4px 4px 0 #9fb4ee}
+.sub{font-size:13px;opacity:.8}
+.back{display:inline-block;margin-bottom:10px;font-size:13px;color:var(--navy)}
+.box{background:#fff;border:3px solid var(--navy);border-radius:6px;box-shadow:4px 4px 0 var(--c,#c9c3f5);padding:14px;margin:14px 0}
+.box h2{font-weight:normal;font-size:16px;margin-bottom:6px}
+.box p{font-size:13px;margin:4px 0}
+.n{display:inline-grid;place-items:center;width:26px;height:26px;margin-right:6px;background:var(--c);border:2px solid var(--navy);border-radius:6px;font-size:14px}
+.c1{--c:#ffc6e3}.c2{--c:#d8cbff}.c3{--c:#bfe6ff}.c4{--c:#fff0a8}
+button.main{display:block;width:100%;margin-top:8px;padding:12px;font:inherit;font-size:15px;color:var(--navy);background:var(--pink);border:3px solid var(--navy);border-radius:6px;box-shadow:3px 3px 0 #9fb4ee;touch-action:manipulation}
+button.main:active{transform:translate(2px,2px);box-shadow:1px 1px 0 #9fb4ee}
+textarea{width:100%;height:90px;margin-top:8px;padding:8px;font:11px/1.4 ui-monospace,monospace;color:var(--navy);border:2px solid var(--navy);border-radius:6px;background:#f6fcff;word-break:break-all}
+.st{font-size:12px;min-height:18px;margin-top:6px}
+code{background:var(--yellow);padding:0 4px;border-radius:3px}
+footer{text-align:center;margin-top:20px;font-size:12px;opacity:.75}
+@media (prefers-reduced-motion:reduce){.bubbles span,.water-top{animation:none}}
+</style>
+</head>
+<body>
+<div class="bubbles" aria-hidden="true" id="bubbles"></div>
+<main class="tank">
+<div class="water-top" aria-hidden="true"></div>
+<header>
+<a class="back" href="index.html">← ツール置き場へ</a>
+<div class="deco">♡ ✦ ♡ ✦ ♡</div>
+<h1>ChatGPTコピー</h1>
+<p class="sub">スレッドを水槽に貯金して、まとめてコピー 🫧</p>
+</header>
+
+<section class="box c1">
+<h2><span class="n">1</span>コードをコピー</h2>
+<p>ブックマーク用の小さなプログラムです。</p>
+<button class="main" id="copyCode">🫧 コードをコピーする</button>
+<textarea id="code" readonly spellcheck="false" aria-label="ブックマークレットのコード"></textarea>
+<p class="st" id="status" role="status"></p>
+</section>
+
+<section class="box c2">
+<h2><span class="n">2</span>Safariに登録</h2>
+<p>① このページをブックマークに追加</p>
+<p>② ブックマーク一覧→編集→追加したものを開く</p>
+<p>③ 名前を「水槽ログ 🫧」にして、URL欄を全部消してコードを貼り付け→保存</p>
+<p>※ 貼ったあと、先頭が <code>javascript:</code> になっていればOK</p>
+</section>
+
+<section class="box c3">
+<h2><span class="n">3</span>使い方</h2>
+<p>① ChatGPTのスレッドを開く</p>
+<p>② ブックマークをタップ → 水槽パネルが出ます（もう一度タップで消えます）</p>
+<p>③ 「自動スキャン」で上→下へ勝手に貯金。手動でスクロールしてもOK</p>
+<p>④ 「抜けチェック」が ✅ になったら「全部コピー」</p>
+<p>・抜けがあると「⚠️ 12〜15番が抜け」と出るので、その辺りまでスクロールしてね</p>
+<p>・画面に消える境目には、ピンクの点線「ここより上は消えてるよ」が出ます</p>
+</section>
+
+<section class="box c4">
+<h2>♡ 注意</h2>
+<p>貯金はページを開いている間だけ有効です。再読み込み・タブを閉じると消えます。</p>
+<p>会話は外部に送信しません。コピー時の名前は ♡user♡ / ♡partner♡ になります（本文中の名前は書き換えません）。</p>
+<p>ChatGPTの画面構造が変わると動かないことがあります。</p>
+</section>
+
+<footer><div class="deco">♡ ✦ ♡</div>made of bubbles, pixels &amp; tiny memories</footer>
+</main>
+
+<script>
+function aqua(){
+var ID='aqua-log-host',old=document.getElementById(ID);
+if(old){old.remove();var l0=document.getElementById(ID+'-line');if(l0)l0.remove();return}
+var seen=new Map(),auto=false,tm=null,deb=null,phase=-1,still=0;
+var NV='#33406e',FONT="'DotGothic16','Hiragino Kaku Gothic ProN',sans-serif";
+function el(tag,css,txt,p){var e=document.createElement(tag);e.style.cssText=css;if(txt)e.textContent=txt;if(p)p.appendChild(e);return e}
+var BTN='border:2px solid '+NV+';border-radius:6px;padding:9px 4px;font:inherit;font-weight:bold;color:'+NV+';box-shadow:2px 2px 0 #9fb4ee;touch-action:manipulation;pointer-events:auto;cursor:pointer;';
+var host=el('div','position:fixed;right:10px;bottom:16px;z-index:2147483647;pointer-events:auto;touch-action:manipulation;font-family:'+FONT+';color:'+NV+';font-size:13px;line-height:1.5;text-align:left;',0,document.documentElement);
+host.id=ID;
+var ln=el('div','position:fixed;left:0;right:0;height:0;border-top:3px dashed #ff7eb8;z-index:2147483646;pointer-events:none;display:none;',0,document.documentElement);
+ln.id=ID+'-line';
+el('div','position:absolute;right:6px;top:2px;background:#ffc6e3;border:2px solid '+NV+';border-radius:6px;padding:0 6px;font:11px '+FONT+';color:'+NV+';','↑ここより上は画面から消えてるよ',ln);
+var bub=el('button',BTN+'display:none;width:56px;height:56px;font-size:26px;background:#ffc6e3;margin-left:auto;','🫧',host);
+var pan=el('div','width:min(320px,calc(100vw - 20px));max-height:72vh;overflow:auto;background:#fff;border:3px solid '+NV+';border-radius:8px;box-shadow:4px 4px 0 #c9c3f5;padding:10px;pointer-events:auto;',0,host);
+var hd=el('div','display:flex;align-items:center;gap:6px;margin-bottom:6px;',0,pan);
+el('div','flex:1;font-weight:bold;font-size:15px;','🫧 水槽ログ',hd);
+var xb=el('button',BTN+'width:36px;background:#d8cbff;','▁',hd);
+var st=el('div','padding:6px 8px;background:#e8f6ff;border:2px solid '+NV+';border-radius:6px;font-weight:bold;','',pan);
+var gp=el('div','padding:6px 8px;margin-top:6px;border:2px solid '+NV+';border-radius:6px;font-size:12px;','',pan);
+var gr=el('div','display:grid;grid-template-columns:1fr 1fr;gap:6px;margin:8px 0;',0,pan);
+var bAuto=el('button',BTN+'background:#bff0e0;','自動スキャン',gr);
+var bCopy=el('button',BTN+'background:#ffc6e3;','全部コピー',gr);
+var bClr=el('button',BTN+'background:#fff0a8;grid-column:1/3;','貯金をリセット',gr);
+var msg=el('div','font-size:11px;margin:4px 0;','手動でスクロールしても貯金されるよ',pan);
+var nm=el('div','display:grid;grid-template-columns:1fr 1fr;gap:6px;',0,pan);
+var IN='display:block;width:100%;padding:6px;font:12px '+FONT+';color:'+NV+';border:2px solid '+NV+';border-radius:6px;background:#fff;';
+var iu=el('input',IN,0,el('label','font-size:11px;','ユーザー名',nm));iu.value='♡user♡';
+var ip=el('input',IN,0,el('label','font-size:11px;','パートナー名',nm));ip.value='♡partner♡';
+var ta=el('textarea','display:block;width:100%;height:110px;margin-top:8px;padding:6px;font:11px/1.4 ui-monospace,monospace;color:'+NV+';border:2px solid '+NV+';border-radius:6px;background:#f6fcff;',0,pan);
+ta.setAttribute('aria-label','貯金した会話');
+
+function roleOf(n){var r=n.getAttribute('data-message-author-role')||n.getAttribute('data-turn');if(!r){var c=n.querySelector('[data-message-author-role]');r=c&&c.getAttribute('data-message-author-role')}return r==='user'||r==='assistant'?r:null}
+function msgs(){
+var q=['[data-message-author-role]','[data-turn]','[data-testid^="conversation-turn-"]'],r=[];
+for(var i=0;i<q.length&&!r.length;i++)r=[].slice.call(document.querySelectorAll(q[i])).filter(roleOf);
+return r}
+function ext(root){
+var c=root.cloneNode(true);
+c.querySelectorAll('button,svg,nav,style,script,.sr-only,[aria-hidden="true"],[role="toolbar"]').forEach(function(e){e.remove()});
+var B={ADDRESS:1,ARTICLE:1,ASIDE:1,BLOCKQUOTE:1,DD:1,DIV:1,DL:1,DT:1,FIGURE:1,H1:1,H2:1,H3:1,H4:1,LI:1,OL:1,P:1,PRE:1,SECTION:1,TABLE:1,TR:1,UL:1},out='';
+function w(n){
+if(n.nodeType===3){out+=n.nodeValue;return}
+if(n.nodeType!==1)return;
+if(n.tagName==='BR'){out+='\n';return}
+var b=B[n.tagName];
+if(b&&out&&out.slice(-1)!=='\n')out+='\n';
+for(var i=0;i<n.childNodes.length;i++)w(n.childNodes[i]);
+if(b&&out.slice(-1)!=='\n')out+='\n'}
+w(c);
+return out.replace(/[ \t]+\n/g,'\n').replace(/\n{3,}/g,'\n\n').replace(/^\n+|\n+$/g,'')}
+function ranges(a){var o=[],s=a[0],p=a[0];for(var i=1;i<=a.length;i++){if(a[i]!==p+1){o.push(s===p?s:s+'〜'+p);s=a[i]}p=a[i]}return o.join(', ')}
+function render(){
+var all=[];seen.forEach(function(v){all.push(v)});all.sort(function(a,b){return a.o-b.o});
+var ns=[];all.forEach(function(m){if(m.t!=null&&ns.indexOf(m.t)<0)ns.push(m.t)});
+ns.sort(function(a,b){return a-b});
+var miss=[];if(ns.length)for(var k=ns[0];k<=ns[ns.length-1];k++)if(ns.indexOf(k)<0)miss.push(k);
+var top=ns.length&&ns[0]<=2;
+st.textContent='🫧 保存 '+all.length+'件'+(ns.length?' / 番号 '+ns[0]+'〜'+ns[ns.length-1]:'');
+gp.textContent=!all.length?'発言が見つかりません。['+document.querySelectorAll('[data-message-author-role]').length+'/'+document.querySelectorAll('[data-turn]').length+'/'+document.querySelectorAll('[data-testid^="conversation-turn-"]').length+'] ChatGPTのスレッド画面でもう一度タップしてね':(miss.length?'⚠️ '+ranges(miss)+'番が抜け。その辺りまでスクロールで戻ってね':(ns.length?'✅ 抜けなし（連続OK）':'番号が取れないので順番は取得順です'))+(all.length?(top?' / 先頭まで取得済み ✅':' / 先頭はまだ ⬆️'):'');
+gp.style.background=miss.length?'#ffe0ef':'#e6fff5';
+var u=iu.value.trim()||'♡user♡',p=ip.value.trim()||'♡partner♡';
+ta.value=all.map(function(m){return '【'+(m.r==='user'?u:p)+'】\n'+m.x}).join('\n\n')}
+function line(L){
+var f=L[0],ok=false;
+if(f){var a=f.closest('[data-testid^="conversation-turn-"]'),m=a&&/conversation-turn-(\d+)/.exec(a.getAttribute('data-testid')),r=f.getBoundingClientRect();
+ok=!!m&&+m[1]>2&&r.top>30&&r.top<innerHeight-120;if(ok)ln.style.top=r.top+'px'}
+ln.style.display=ok?'block':'none'}
+function scan(){
+var L=msgs();
+L.forEach(function(n){
+var role=roleOf(n),tx=ext(n);if(!tx)return;
+var a=n.closest('[data-testid^="conversation-turn-"]'),t=null,i=0;
+if(a){var m=/conversation-turn-(\d+)/.exec(a.getAttribute('data-testid'));if(m)t=+m[1];i=Math.max(0,[].indexOf.call(a.querySelectorAll('[data-message-author-role]'),n))}
+var key=n.getAttribute('data-message-id')||(t!=null?'t'+t+'_'+i:role+tx.slice(0,200)),o=seen.get(key);
+if(!o||o.x.length<=tx.length)seen.set(key,{r:role,x:tx,t:t,o:t!=null?t*100+i:1e6+seen.size})});
+render();line(L)}
+function later(){clearTimeout(deb);deb=setTimeout(scan,250)}
+new MutationObserver(later).observe(document.body,{childList:true,subtree:true,characterData:true});
+window.addEventListener('scroll',later,true);
+
+function scroller(){var n=msgs()[0]||document.body;while(n&&n!==document.documentElement){var s=getComputedStyle(n);if(/auto|scroll/.test(s.overflowY)&&n.scrollHeight>n.clientHeight+50)return n;n=n.parentElement}return document.scrollingElement||document.documentElement}
+function stop(t){auto=false;clearTimeout(tm);bAuto.textContent='自動スキャン';scan();if(t)msg.textContent=t}
+function step(){
+if(!auto)return;
+scan();
+var sc=scroller(),h=Math.max(200,Math.floor((sc===document.scrollingElement||sc===document.documentElement?innerHeight:sc.clientHeight)*.6)),b=sc.scrollTop;
+sc.scrollTop=b+phase*h;
+if(Math.abs(sc.scrollTop-b)<2)still++;else still=0;
+if(still>=3){if(phase<0){phase=1;still=0;msg.textContent='先頭まで到達。下へ貯金中…'}else{stop('自動スキャン終了。抜けチェックを確認してね');return}}
+tm=setTimeout(step,400)}
+bAuto.onclick=function(){
+if(auto){stop('停止しました');return}
+auto=true;phase=-1;still=0;bAuto.textContent='停止する';msg.textContent='上へ移動しながら貯金中…';step()};
+bClr.onclick=function(){seen.clear();scan();msg.textContent='貯金をリセットしました'};
+function copy(){
+scan();
+if(!ta.value){msg.textContent='発言が見つかりません。スレッド画面で押してね';return}
+var done=function(){msg.textContent='コピーしました '+seen.size+'件 ✅ 最初と最後を確認してね'};
+var fb=function(){try{ta.focus();ta.select();ta.setSelectionRange(0,ta.value.length);if(document.execCommand('copy')){done();return}}catch(e){}msg.textContent='自動コピー不可。選択中の本文を長押ししてコピーしてね'};
+try{navigator.clipboard.writeText(ta.value).then(done,fb)}catch(e){fb()}}
+bCopy.onclick=copy;
+iu.oninput=render;ip.oninput=render;
+xb.onclick=function(){pan.style.display='none';bub.style.display='block'};
+bub.onclick=function(){pan.style.display='block';bub.style.display='none'};
+scan();
+}
+
+var code='javascript:'+encodeURIComponent('('+aqua.toString()+')()');
+document.getElementById('code').value=code;
+document.getElementById('copyCode').addEventListener('click',function(){
+var s=document.getElementById('status'),a=document.getElementById('code');
+function fb(){a.focus();a.select();a.setSelectionRange(0,a.value.length);s.textContent='自動コピーできませんでした。コード欄を長押ししてコピーしてね'}
+try{navigator.clipboard.writeText(code).then(function(){s.textContent='コピーしました ✅ ブックマークのURL欄に貼り付けてね'},fb)}catch(e){fb()}});
+(function(){var box=document.getElementById('bubbles');for(var i=0;i<22;i++){var s=document.createElement('span'),z=8+Math.random()*26;s.style.width=s.style.height=z+'px';s.style.left=Math.random()*100+'%';s.style.animationDuration=9+Math.random()*12+'s';s.style.animationDelay=-Math.random()*20+'s';box.appendChild(s)}})();
+</script>
+</body>
+</html>
