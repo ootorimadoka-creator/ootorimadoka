@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>🐟FISH LOG🐟</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DotGothic16&display=swap" rel="stylesheet">
+<style>
+:root{--abyss:#526b9b;--deep:#8fbce0;--sea:#a9b9ef;--aqua:#b8e8f4;--ice:#f5f4ff;--peri:#d7c9ff;--mint:#d5f5ed;--card:rgba(235,245,255,.72)}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'DotGothic16','Hiragino Kaku Gothic ProN','Yu Gothic',sans-serif;color:#536b9b;line-height:1.7;min-height:100vh;padding:24px 14px 60px;overflow-x:hidden;background:radial-gradient(ellipse at 18% 12%,rgba(255,255,255,.9),transparent 34%),linear-gradient(145deg,#c9eaff 0%,#cbd5ff 48%,#f5dfff 100%);background-attachment:fixed}
+.sea{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden}
+.sea span{position:absolute;left:0;white-space:nowrap;animation:swim linear infinite;opacity:.8}
+.sea .r{animation-name:swimr}
+@keyframes swim{from{transform:translateX(-15vw)}to{transform:translateX(115vw)}}
+@keyframes swimr{from{transform:translateX(115vw) scaleX(-1)}to{transform:translateX(-15vw) scaleX(-1)}}
+.tank{position:relative;z-index:1;max-width:720px;margin:0 auto;background:rgba(239,249,255,.66);backdrop-filter:blur(8px);border:4px solid #b8e8f4;border-radius:24px;box-shadow:0 0 0 4px rgba(255,255,255,.45),0 0 0 8px rgba(201,190,255,.28),0 12px 40px rgba(91,116,177,.2);padding:22px 18px 28px}
+.wave{height:14px;margin:-6px -6px 14px;border-radius:12px;background:repeating-linear-gradient(90deg,rgba(127,227,224,.7) 0 14px,rgba(27,108,168,.6) 14px 28px);background-size:56px 100%;animation:wave 5s linear infinite}
+@keyframes wave{to{background-position:-56px 0}}
+header{text-align:center;margin-bottom:18px}
+.deco{font-size:18px;letter-spacing:6px;color:var(--aqua)}
+h1{font-weight:normal;font-size:clamp(24px,6.5vw,36px);margin:6px 0 4px;color:#7186bd;letter-spacing:2px;text-shadow:2px 2px 0 #fff,4px 4px 0 #c5c8f5}
+.sub{font-size:13px;opacity:.85}
+.tag{display:inline-block;margin:6px 0;padding:0 8px;background:var(--aqua);color:var(--abyss);border:2px solid var(--abyss);border-radius:6px;font-size:13px}
+.links{font-size:13px;margin-bottom:8px}
+a{color:#7186bd}
+.box{background:rgba(255,255,255,.58);border:2px solid #b8dff1;border-radius:14px;box-shadow:3px 4px 0 rgba(173,183,235,.45);padding:14px;margin:14px 0}
+.box h2{font-weight:normal;font-size:16px;margin-bottom:6px}
+.box p{font-size:13px;margin:4px 0}
+.n{display:inline-grid;place-items:center;width:26px;height:26px;margin-right:6px;background:var(--c);color:var(--abyss);border:2px solid var(--abyss);border-radius:6px;font-size:14px}
+.c1{--c:#7fe3e0}.c2{--c:#a9b8ff}.c3{--c:#8fd0ff}.c4{--c:#b8f2e6}.c5{--c:#6b8cff}
+button.main{display:block;width:100%;margin-top:8px;padding:12px;font:inherit;font-size:15px;color:var(--abyss);background:var(--aqua);border:3px solid var(--abyss);border-radius:6px;box-shadow:3px 3px 0 var(--sea);touch-action:manipulation}
+button.main:active{transform:translate(2px,2px);box-shadow:1px 1px 0 var(--sea)}
+textarea{width:100%;height:90px;margin-top:8px;padding:8px;font:11px/1.4 ui-monospace,monospace;color:var(--abyss);border:2px solid var(--aqua);border-radius:6px;background:#e3f8ff;word-break:break-all}
+.st{font-size:12px;min-height:18px;margin-top:6px}
+code{background:var(--abyss);color:#7186bd;padding:0 4px;border-radius:3px}
+footer{text-align:center;margin-top:20px;font-size:12px;opacity:.75}
+:focus-visible{outline:3px solid var(--peri);outline-offset:2px}
+@media (prefers-reduced-motion:reduce){.sea span,.wave{animation:none}.sea span{left:20%}}
+</style>
+</head>
+<body>
+<div class="sea" aria-hidden="true" id="sea"></div>
+<main class="tank">
+<div class="wave" aria-hidden="true"></div>
+<header>
+<div class="links"><a href="index.html">← ツール置き場へ</a>　<a href="chatgpt-copy-ja.html">ChatGPT版（水槽ログ 🫧）</a></div>
+<div class="deco">🐟 ✦ 🐠 ✦ 🐡</div>
+<h1>🐟FISH LOG🐟</h1>
+<span class="tag">for Muse ✧ pastel aquarium</span>
+<p class="sub">スレッドを魚群みたいに集めて、まとめて（or 好きな範囲だけ）コピー 🐟</p>
+</header>
+
+<section class="box c1">
+<h2><span class="n">1</span>コードをコピー</h2>
+<p>ブックマーク用の小さなプログラムです。</p>
+<button class="main" id="copyCode">🐟 コードをコピーする</button>
+<textarea id="code" readonly spellcheck="false" aria-label="ブックマークレットのコード">javascript:(function%20fish()%7B%0Avar%20ID%3D'fish-log-host'%2Cold%3Ddocument.getElementById(ID)%3B%0Aif(old)%7Bif(window.__fishOff)window.__fishOff()%3Bold.remove()%3Bvar%20l0%3Ddocument.getElementById(ID%2B'-line')%3Bif(l0)l0.remove()%3Breturn%7D%0Avar%20nxt%3D%7B%7D%2Cprv%3D%7B%7D%2Cseen%3Dnew%20Map()%2Cels%3D%7B%7D%2Corder%3D%5B%5D%2CtopKey%3Dnull%2CbotKey%3Dnull%2Cauto%3Dfalse%2Crng%3Dfalse%2Ctm%3Dnull%2Cdeb%3Dnull%2Cphase%3D-1%2Cstill%3D0%2Cmode%3D''%2Csel%3D%7Bs%3Anull%2Ce%3Anull%7D%2Cpick%3Dnull%2Clearn%3Dnull%2Ccfg%3Dnull%2CrowSig%3D''%3B%0Atry%7Bcfg%3DJSON.parse(localStorage.getItem('fish-log-sel')%7C%7C'null')%7Dcatch(e)%7B%7D%0Avar%20NV%3D'%236379a8'%2CAQ%3D'%23b9e5f2'%2CBG%3D'rgba(239%2C247%2C255%2C.97)'%2CFG%3D'%23586f9e'%2CFONT%3D%22'DotGothic16'%2C'Hiragino%20Kaku%20Gothic%20ProN'%2Csans-serif%22%3B%0Afunction%20el(tag%2Ccss%2Ctxt%2Cp)%7Bvar%20e%3Ddocument.createElement(tag)%3Be.style.cssText%3Dcss%3Bif(txt)e.textContent%3Dtxt%3Bif(p)p.appendChild(e)%3Breturn%20e%7D%0Avar%20B2%3D'border%3A1px%20solid%20'%2BAQ%2B'%3Bborder-radius%3A8px%3Bpadding%3A2px%207px%3Bfont%3Ainherit%3Bfont-size%3A11px%3Bcolor%3A'%2BNV%2B'%3Bbackground%3A%23e8eaff%3Btouch-action%3Amanipulation%3Bcursor%3Apointer%3B'%3B%0Avar%20BTN%3D'border%3A1px%20solid%20'%2BAQ%2B'%3Bborder-radius%3A9px%3Bpadding%3A6px%204px%3Bfont%3Ainherit%3Bfont-size%3A11px%3Bfont-weight%3Abold%3Bcolor%3A'%2BNV%2B'%3Bbox-shadow%3A1px%202px%200%20%23c2c8ef%3Btouch-action%3Amanipulation%3Bpointer-events%3Aauto%3Bcursor%3Apointer%3B'%0Avar%20host%3Del('div'%2C'position%3Afixed%3Bright%3A10px%3Bbottom%3A16px%3Bz-index%3A2147483647%3Bpointer-events%3Aauto%3Btouch-action%3Amanipulation%3Bfont-family%3A'%2BFONT%2B'%3Bcolor%3A'%2BFG%2B'%3Bfont-size%3A13px%3Bline-height%3A1.5%3Btext-align%3Aleft%3B'%2C0%2Cdocument.documentElement)%3B%0Ahost.id%3DID%3B%0Avar%20ln%3Del('div'%2C'position%3Afixed%3Bleft%3A0%3Bright%3A0%3Bheight%3A0%3Bborder-top%3A3px%20dashed%20%237fe3e0%3Bz-index%3A2147483646%3Bpointer-events%3Anone%3Bdisplay%3Anone%3B'%2C0%2Cdocument.documentElement)%3B%0Aln.id%3DID%2B'-line'%3B%0Ael('div'%2C'position%3Aabsolute%3Bright%3A6px%3Btop%3A2px%3Bbackground%3A%23a9b8ff%3Bborder%3A2px%20solid%20'%2BNV%2B'%3Bborder-radius%3A6px%3Bpadding%3A0%206px%3Bfont%3A11px%20'%2BFONT%2B'%3Bcolor%3A'%2BNV%2B'%3B'%2C'%E2%86%91%E3%81%93%E3%81%93%E3%82%88%E3%82%8A%E4%B8%8A%E3%81%AF%E7%94%BB%E9%9D%A2%E3%81%8B%E3%82%89%E6%B6%88%E3%81%88%E3%81%A6%E3%82%8B%E3%82%88'%2Cln)%3B%0Avar%20bub%3Del('button'%2CBTN%2B'display%3Anone%3Bwidth%3A46px%3Bheight%3A46px%3Bfont-size%3A22px%3Bbackground%3A%23d9f4f8%3Bmargin-left%3Aauto%3B'%2C'%F0%9F%90%9F'%2Chost)%3B%0Avar%20pan%3Del('div'%2C'width%3Amin(280px%2Ccalc(100vw%20-%2028px))%3Bmax-height%3A54vh%3Boverflow%3Aauto%3Bbackground%3A'%2BBG%2B'%3Bborder%3A2px%20solid%20'%2BAQ%2B'%3Bborder-radius%3A16px%3Bbox-shadow%3A0%205px%2022px%20rgba(91%2C116%2C177%2C.28)%3Bpadding%3A8px%3Bpointer-events%3Aauto%3Boverscroll-behavior%3Acontain%3B'%2C0%2Chost)%3B%0Avar%20hd%3Del('div'%2C'display%3Aflex%3Balign-items%3Acenter%3Bgap%3A6px%3Bmargin-bottom%3A6px%3B'%2C0%2Cpan)%3B%0Ael('div'%2C'flex%3A1%3Bfont-weight%3Abold%3Bfont-size%3A15px%3B'%2C'%F0%9F%90%9F%20FISH%20LOG%20%F0%9F%90%A0'%2Chd)%3B%0Avar%20xb%3Del('button'%2CBTN%2B'width%3A36px%3Bbackground%3A%23a9b8ff%3B'%2C'%E2%96%81'%2Chd)%3B%0Avar%20st%3Del('div'%2C'padding%3A6px%208px%3Bbackground%3A%23e8f5ff%3Bborder%3A1px%20solid%20'%2BAQ%2B'%3Bborder-radius%3A6px%3Bfont-weight%3Abold%3B'%2C''%2Cpan)%3B%0Avar%20gp%3Del('div'%2C'padding%3A6px%208px%3Bmargin-top%3A6px%3Bborder%3A1px%20solid%20'%2BAQ%2B'%3Bborder-radius%3A9px%3Bfont-size%3A11px%3B'%2C''%2Cpan)%3B%0Avar%20g1%3Del('div'%2C'display%3Agrid%3Bgrid-template-columns%3A1fr%201fr%3Bgap%3A6px%3Bmargin%3A8px%200%3B'%2C0%2Cpan)%3B%0Avar%20bAuto%3Del('button'%2CBTN%2B'background%3A%237fe3e0%3B'%2C'%E8%87%AA%E5%8B%95%E3%82%B9%E3%82%AD%E3%83%A3%E3%83%B3'%2Cg1)%3B%0Avar%20bAll%3Del('button'%2CBTN%2B'background%3A%23b8f2e6%3B'%2C'%E5%85%A8%E9%83%A8%E3%82%B3%E3%83%94%E3%83%BC'%2Cg1)%3B%0Ael('div'%2C'font-weight%3Abold%3Bborder-top%3A1px%20dashed%20'%2BAQ%2B'%3Bpadding-top%3A6px%3B'%2C'%E2%9C%82%20%E7%AF%84%E5%9B%B2%E3%82%92%E6%B1%BA%E3%82%81%E3%82%8B'%2Cpan)%3B%0Avar%20rw%3Del('div'%2C'display%3Aflex%3Balign-items%3Acenter%3Bgap%3A4px%3Bmargin%3A4px%200%3B'%2C0%2Cpan)%3B%0Avar%20IN%3D'width%3A100%25%3Bpadding%3A6px%3Bfont%3A12px%20'%2BFONT%2B'%3Bcolor%3A'%2BNV%2B'%3Bborder%3A1px%20solid%20'%2BAQ%2B'%3Bborder-radius%3A9px%3Bbackground%3A%23f5fbff%3B'%3B%0Avar%20ns%3Del('input'%2CIN%2C0%2Crw)%3Bns.type%3D'number'%3Bns.inputMode%3D'numeric'%3Bns.placeholder%3D'%E9%96%8B%E5%A7%8B(%E5%85%88%E9%A0%AD)'%3B%0Ael('span'%2C''%2C'%E3%80%9C'%2Crw)%3B%0Avar%20ne%3Del('input'%2CIN%2C0%2Crw)%3Bne.type%3D'number'%3Bne.inputMode%3D'numeric'%3Bne.placeholder%3D'%E7%B5%82%E4%BA%86(%E6%9C%80%E6%96%B0)'%3B%0Avar%20ri%3Del('div'%2C'font-size%3A12px%3Bmargin%3A2px%200%206px%3B'%2C''%2Cpan)%3B%0Avar%20g2%3Del('div'%2C'display%3Agrid%3Bgrid-template-columns%3A1fr%201fr%3Bgap%3A6px%3B'%2C0%2Cpan)%3B%0Avar%20bPS%3Del('button'%2CBTN%2B'background%3A%238fd0ff%3B'%2C'%F0%9F%93%8D%E9%96%8B%E5%A7%8B%E3%82%92%E3%83%9A%E3%83%BC%E3%82%B8%E3%81%A7%E9%81%B8%E3%81%B6'%2Cg2)%3B%0Avar%20bPE%3Del('button'%2CBTN%2B'background%3A%238fd0ff%3B'%2C'%F0%9F%93%8D%E7%B5%82%E4%BA%86%E3%82%92%E3%83%9A%E3%83%BC%E3%82%B8%E3%81%A7%E9%81%B8%E3%81%B6'%2Cg2)%3B%0Avar%20bRng%3Del('button'%2CBTN%2B'background%3A%23a9b8ff%3B'%2C'%E7%AF%84%E5%9B%B2%E3%81%A0%E3%81%91%E3%82%B9%E3%82%AD%E3%83%A3%E3%83%B3'%2Cg2)%3B%0Avar%20bRC%3Del('button'%2CBTN%2B'background%3A%237fe3e0%3B'%2C'%E7%AF%84%E5%9B%B2%E3%82%B3%E3%83%94%E3%83%BC'%2Cg2)%3B%0Avar%20bRc%3Del('button'%2CBTN%2B'background%3A%23b8f2e6%3B'%2C'%E7%AF%84%E5%9B%B2%E3%82%AF%E3%83%AA%E3%82%A2'%2Cg2)%3B%0Avar%20bLearn%3Del('button'%2CBTN%2B'background%3A%23b8f2e6%3B'%2C'%E5%BD%A2%E3%82%92%E6%95%99%E3%81%88%E3%82%8B'%2Cg2)%3B%0Avar%20bClr%3Del('button'%2CBTN%2B'background%3A%23a9b8ff%3Bgrid-column%3A1%2F3%3Bmargin-top%3A0%3B'%2C'%E9%9B%86%E3%82%81%E3%81%9F%E3%83%AD%E3%82%B0%E3%82%92%E3%83%AA%E3%82%BB%E3%83%83%E3%83%88'%2Cg2)%3B%0Avar%20msg%3Del('div'%2C'font-size%3A11px%3Bmargin%3A6px%200%3B'%2C'%E6%89%8B%E5%8B%95%E3%81%A7%E3%82%B9%E3%82%AF%E3%83%AD%E3%83%BC%E3%83%AB%E3%81%97%E3%81%A6%E3%82%82%E9%9B%86%E3%81%BE%E3%82%8B%E3%82%88'%2Cpan)%3B%0Avar%20nm%3Del('div'%2C'display%3Agrid%3Bgrid-template-columns%3A1fr%201fr%3Bgap%3A6px%3B'%2C0%2Cpan)%3B%0Avar%20iu%3Del('input'%2CIN%2C0%2Cel('label'%2C'font-size%3A11px%3B'%2C'%E3%83%A6%E3%83%BC%E3%82%B6%E3%83%BC%E5%90%8D'%2Cnm))%3Biu.value%3D'%F0%9F%90%9F'%3B%0Avar%20ip%3Del('input'%2CIN%2C0%2Cel('label'%2C'font-size%3A11px%3B'%2C'%E3%83%91%E3%83%BC%E3%83%88%E3%83%8A%E3%83%BC%E5%90%8D'%2Cnm))%3Bip.value%3D'%F0%9F%90%A0'%3B%0Avar%20lst%3Del('div'%2C'max-height%3A150px%3Boverflow%3Aauto%3Bmargin-top%3A8px%3Bborder%3A2px%20solid%20'%2BAQ%2B'%3Bborder-radius%3A6px%3B'%2C0%2Cpan)%3B%0Avar%20ta%3Del('textarea'%2C'display%3Ablock%3Bwidth%3A100%25%3Bheight%3A100px%3Bmargin-top%3A8px%3Bpadding%3A6px%3Bfont%3A11px%2F1.4%20ui-monospace%2Cmonospace%3Bcolor%3A'%2BNV%2B'%3Bborder%3A1px%20solid%20'%2BAQ%2B'%3Bborder-radius%3A9px%3Bbackground%3A%23f5fbff%3B'%2C0%2Cpan)%3B%0Ata.readOnly%3Dtrue%3Bta.setAttribute('aria-label'%2C'%E9%9B%86%E3%82%81%E3%81%9F%E4%BC%9A%E8%A9%B1')%3B%0A%0Afunction%20q(s%2Croot)%7Btry%7Breturn%20%5B%5D.slice.call((root%7C%7Cdocument).querySelectorAll(s))%7Dcatch(e)%7Breturn%20%5B%5D%7D%7D%0Avar%20PAIRS%3D%5B%5B'%5Bdata-message-author-role%3D%22user%22%5D'%2C'%5Bdata-message-author-role%3D%22assistant%22%5D'%5D%2C%5B'%5Bdata-role%3D%22user%22%5D'%2C'%5Bdata-role%3D%22assistant%22%5D'%5D%2C%5B'%5Bdata-author%3D%22user%22%5D'%2C'%5Bdata-author%3D%22assistant%22%5D'%5D%2C%5B'%5Bdata-sender%3D%22user%22%5D'%2C'%5Bdata-sender%3D%22assistant%22%5D'%5D%2C%5B'%5Bdata-testid*%3D%22user-message%22%20i%5D'%2C'%5Bdata-testid*%3D%22assistant-message%22%20i%5D'%5D%2C%5B'%5Bdata-testid*%3D%22user%22%20i%5D%5Bdata-testid*%3D%22message%22%20i%5D'%2C'%5Bdata-testid*%3D%22muse%22%20i%5D%5Bdata-testid*%3D%22message%22%20i%5D'%5D%2C%5B'%5Bdata-testid*%3D%22human%22%20i%5D'%2C'%5Bdata-testid*%3D%22muse%22%20i%5D'%5D%2C%5B'%5Bclass*%3D%22user-message%22%20i%5D'%2C'%5Bclass*%3D%22assistant-message%22%20i%5D'%5D%5D%3B%0Afunction%20keep(r)%7Breturn%20r.filter(function(m)%7Breturn%20!host.contains(m.n)%26%26!r.some(function(o)%7Breturn%20o!%3D%3Dm%26%26o.n.contains(m.n)%7D)%7D)%7D%0Afunction%20build(su%2Csa%2Clabel)%7B%0Avar%20r%3D%5B%5D%3Bq(su).forEach(function(n)%7Br.push(%7Bn%3An%2Cr%3A'user'%7D)%7D)%3Bq(sa).forEach(function(n)%7Br.push(%7Bn%3An%2Cr%3A'assistant'%7D)%7D)%3B%0Ar%3Dkeep(r)%3Bif(!r.length)return%20null%3B%0Ar.sort(function(x%2Cy)%7Breturn%20x.n.compareDocumentPosition(y.n)%264%3F-1%3A1%7D)%3Bmode%3Dlabel%3Breturn%20r%7D%0Afunction%20msgs()%7B%0Avar%20r%3Dnull%3B%0Aif(cfg%26%26cfg.u%26%26cfg.a)r%3Dbuild(cfg.u%2Ccfg.a%2C'%E8%A6%9A%E3%81%88%E3%81%9F%E5%BD%A2')%3B%0Afor(var%20i%3D0%3Bi%3CPAIRS.length%26%26!r%3Bi%2B%2B)r%3Dbuild(PAIRS%5Bi%5D%5B0%5D%2CPAIRS%5Bi%5D%5B1%5D%2C'%E8%87%AA%E5%8B%95%E6%A4%9C%E5%87%BA')%3B%0Aif(!r)%7Bmode%3D''%3Breturn%5B%5D%7D%0Areturn%20r%7D%0Afunction%20ext(root)%7B%0Avar%20c%3Droot.cloneNode(true)%3B%0Ac.querySelectorAll('button%2Csvg%2Cnav%2Cstyle%2Cscript%2C.sr-only%2C%5Baria-hidden%3D%22true%22%5D%2C%5Brole%3D%22toolbar%22%5D').forEach(function(e)%7Be.remove()%7D)%3B%0Avar%20B%3D%7BADDRESS%3A1%2CARTICLE%3A1%2CASIDE%3A1%2CBLOCKQUOTE%3A1%2CDD%3A1%2CDIV%3A1%2CDL%3A1%2CDT%3A1%2CFIGURE%3A1%2CH1%3A1%2CH2%3A1%2CH3%3A1%2CH4%3A1%2CLI%3A1%2COL%3A1%2CP%3A1%2CPRE%3A1%2CSECTION%3A1%2CTABLE%3A1%2CTR%3A1%2CUL%3A1%7D%2Cout%3D''%3B%0Afunction%20w(n)%7B%0Aif(n.nodeType%3D%3D%3D3)%7Bout%2B%3Dn.nodeValue%3Breturn%7D%0Aif(n.nodeType!%3D%3D1)return%3B%0Aif(n.tagName%3D%3D%3D'BR')%7Bout%2B%3D'%5Cn'%3Breturn%7D%0Avar%20b%3DB%5Bn.tagName%5D%3B%0Aif(b%26%26out%26%26out.slice(-1)!%3D%3D'%5Cn')out%2B%3D'%5Cn'%3B%0Afor(var%20i%3D0%3Bi%3Cn.childNodes.length%3Bi%2B%2B)w(n.childNodes%5Bi%5D)%3B%0Aif(b%26%26out.slice(-1)!%3D%3D'%5Cn')out%2B%3D'%5Cn'%7D%0Aw(c)%3B%0Areturn%20out.replace(%2F%5B%20%5Ct%5D%2B%5Cn%2Fg%2C'%5Cn').replace(%2F%5Cn%7B3%2C%7D%2Fg%2C'%5Cn%5Cn').replace(%2F%5E%5Cn%2B%7C%5Cn%2B%24%2Fg%2C'')%7D%0Afunction%20scrOf(n)%7Bwhile(n%26%26n!%3D%3Ddocument.documentElement)%7Bvar%20s%3DgetComputedStyle(n)%3Bif(%2Fauto%7Cscroll%2F.test(s.overflowY)%26%26n.scrollHeight%3En.clientHeight%2B50)return%20n%3Bn%3Dn.parentElement%7Dreturn%20document.scrollingElement%7C%7Cdocument.documentElement%7D%0Afunction%20isDoc(sc)%7Breturn%20sc%3D%3D%3Ddocument.scrollingElement%7C%7Csc%3D%3D%3Ddocument.documentElement%7C%7Csc%3D%3D%3Ddocument.body%7D%0Afunction%20idx(k)%7Bfor(var%20i%3D0%3Bi%3Corder.length%3Bi%2B%2B)if(order%5Bi%5D.k%3D%3D%3Dk)return%20i%3Breturn%20-1%7D%0Afunction%20span()%7Bvar%20n%3Dorder.length%2Ci%3D0%2Cj%3Dn-1%3Bif(sel.s!%3Dnull)%7Bi%3Didx(sel.s)%3Bif(i%3C0)i%3D0%7Dif(sel.e!%3Dnull)%7Bj%3Didx(sel.e)%3Bif(j%3C0)j%3Dn-1%7Dif(i%3Ej)%7Bvar%20t%3Di%3Bi%3Dj%3Bj%3Dt%7Dreturn%5Bi%2Cj%5D%7D%0Afunction%20gapsIn(i%2Cj)%7Bvar%20g%3D0%3Bfor(var%20p%3Di%3Bp%3Cj%3Bp%2B%2B)if(nxt%5Border%5Bp%5D.k%5D!%3D%3Dorder%5Bp%2B1%5D.k)g%2B%2B%3Breturn%20g%7D%0Afunction%20names()%7Breturn%5Biu.value.trim()%7C%7C'%E2%99%A1user%E2%99%A1'%2Cip.value.trim()%7C%7C'%E2%99%A1partner%E2%99%A1'%5D%7D%0Afunction%20fmt(l)%7Bvar%20n%3Dnames()%3Breturn%20l.map(function(m)%7Breturn%20'%E3%80%90'%2B(m.r%3D%3D%3D'user'%3Fn%5B0%5D%3An%5B1%5D)%2B'%E3%80%91%5Cn'%2Bm.x%7D).join('%5Cn%5Cn')%7D%0Afunction%20rows()%7B%0Avar%20sg%3Dorder.length%2B'%7C'%2B(order%5B0%5D%26%26order%5B0%5D.k)%2B'%7C'%2B(order.length%26%26order%5Border.length-1%5D.k)%2B'%7C'%2Bsel.s%2B'%7C'%2Bsel.e%3B%0Aif(sg%3D%3D%3DrowSig)return%3BrowSig%3Dsg%3Blst.textContent%3D''%3B%0Avar%20sp%3Dspan()%2Con%3Dsel.s!%3Dnull%7C%7Csel.e!%3Dnull%3B%0Aorder.forEach(function(m%2Ci)%7B%0Avar%20r%3Del('div'%2C'display%3Aflex%3Balign-items%3Acenter%3Bgap%3A4px%3Bpadding%3A3px%204px%3Bborder-bottom%3A1px%20solid%20%23d6e7f5%3Bfont-size%3A11px%3Bbackground%3A'%2B(on%26%26i%3E%3Dsp%5B0%5D%26%26i%3C%3Dsp%5B1%5D%3F'%23e3f5ff'%3A'transparent')%2B'%3B'%2C0%2Clst)%3B%0Ael('span'%2C'width%3A28px%3Btext-align%3Aright%3Bopacity%3A.8%3B'%2CString(i%2B1)%2Cr)%3B%0Ael('span'%2C''%2Cm.r%3D%3D%3D'user'%3F'%F0%9F%90%9F'%3A'%F0%9F%90%A0'%2Cr)%3B%0Ael('span'%2C'flex%3A1%3Boverflow%3Ahidden%3Bwhite-space%3Anowrap%3Btext-overflow%3Aellipsis%3B'%2Cm.x.replace(%2F%5Cs%2B%2Fg%2C'%20').slice(0%2C30)%2Cr)%3B%0Avar%20a%3Del('button'%2CB2%2B'background%3A'%2B(sel.s%3D%3D%3Dm.k%3F'%237fe3e0'%3A'%23a9b8ff')%2B'%3B'%2C'%E5%A7%8B'%2Cr)%3B%0Avar%20b%3Del('button'%2CB2%2B'background%3A'%2B(sel.e%3D%3D%3Dm.k%3F'%237fe3e0'%3A'%23a9b8ff')%2B'%3B'%2C'%E7%B5%82'%2Cr)%3B%0Aa.onclick%3Dfunction()%7Bsel.s%3Dsel.s%3D%3D%3Dm.k%3Fnull%3Am.k%3BrowSig%3D''%3Brender()%7D%3B%0Ab.onclick%3Dfunction()%7Bsel.e%3Dsel.e%3D%3D%3Dm.k%3Fnull%3Am.k%3BrowSig%3D''%3Brender()%7D%7D)%7D%0Afunction%20render()%7B%0Avar%20heads%3D%5B%5D%3Bseen.forEach(function(v)%7Bheads.push(v)%7D)%3B%0Aheads.sort(function(a%2Cb)%7Breturn%20a.y-b.y%7D)%3B%0Avar%20ord%3Dheads%3B%0Aorder%3Dord%3B%0Aif(sel.s!%3Dnull%26%26idx(sel.s)%3C0)sel.s%3Dnull%3B%0Aif(sel.e!%3Dnull%26%26idx(sel.e)%3C0)sel.e%3Dnull%3B%0Avar%20gaps%3D0%3Bfor(var%20gi%3D0%3Bgi%2B1%3Cord.length%3Bgi%2B%2B)if(nxt%5Bord%5Bgi%5D.k%5D!%3D%3Dord%5Bgi%2B1%5D.k)gaps%2B%2B%3Bvar%20top%3D!!topKey%26%26seen.has(topKey)%26%26!prv%5BtopKey%5D%2Cbot%3D!!botKey%26%26seen.has(botKey)%26%26!nxt%5BbotKey%5D%3B%0Ast.textContent%3D'%F0%9F%90%9F%20%E9%9B%86%E3%82%81%E3%81%9F%20'%2Bord.length%2B'%E4%BB%B6'%2B(mode%3F'%20%2F%20'%2Bmode%3A'')%3B%0Agp.textContent%3D!ord.length%3F'%E7%99%BA%E8%A8%80%E3%81%8C%E8%A6%8B%E3%81%A4%E3%81%8B%E3%82%8A%E3%81%BE%E3%81%9B%E3%82%93%E3%80%82%E3%80%8C%E5%BD%A2%E3%82%92%E6%95%99%E3%81%88%E3%82%8B%E3%80%8D%E3%81%A7%E3%80%81%E8%87%AA%E5%88%86%E3%81%AE%E7%99%BA%E8%A8%80%E2%86%92Muse%E3%81%AE%E7%99%BA%E8%A8%80%E3%81%AE%E9%A0%86%E3%81%AB%E3%82%BF%E3%83%83%E3%83%97%E3%81%97%E3%81%A6%E3%81%AD'%3A(gaps%3F'%E2%9A%A0%EF%B8%8F%20%E9%80%94%E4%B8%AD%E3%81%AB%E6%8A%9C%E3%81%91%E3%81%8C'%2Bgaps%2B'%E3%81%8B%E6%89%80%E3%80%82%E3%82%B9%E3%82%AF%E3%83%AD%E3%83%BC%E3%83%AB%E3%81%A7%E6%88%BB%E3%81%A3%E3%81%A6%E3%81%AD'%3A'%E2%9C%85%20%E6%8A%9C%E3%81%91%E3%81%AA%E3%81%97')%2B(top%3F'%20%2F%20%E5%85%88%E9%A0%AD%E3%81%BE%E3%81%A7%E5%8F%96%E5%BE%97%E6%B8%88%E3%81%BF%20%E2%9C%85'%3A'%20%2F%20%E5%85%88%E9%A0%AD%E3%81%AF%E3%81%BE%E3%81%A0%20%E2%AC%86%EF%B8%8F')%2B(bot%3F'%20%2F%20%E6%9C%AB%E5%B0%BE%E3%81%BE%E3%81%A7%E5%8F%96%E5%BE%97%E6%B8%88%E3%81%BF%20%E2%9C%85'%3A'%20%2F%20%E6%9C%AB%E5%B0%BE%E3%81%AF%E3%81%BE%E3%81%A0%20%E2%AC%87%EF%B8%8F')%3B%0Agp.style.background%3D!ord.length%7C%7Cgaps%3F'%23f2eaff'%3A'%23e4f8f4'%3B%0Avar%20sp%3Dspan()%2Con%3Dsel.s!%3Dnull%7C%7Csel.e!%3Dnull%3B%0Aif(document.activeElement!%3D%3Dns)ns.value%3Dsel.s!%3Dnull%3Fidx(sel.s)%2B1%3A''%3B%0Aif(document.activeElement!%3D%3Dne)ne.value%3Dsel.e!%3Dnull%3Fidx(sel.e)%2B1%3A''%3B%0Ari.textContent%3D!ord.length%3F''%3Aon%3F'%E7%AF%84%E5%9B%B2%EF%BC%9A'%2B(sp%5B0%5D%2B1)%2B'%E3%80%9C'%2B(sp%5B1%5D%2B1)%2B'%E7%95%AA%EF%BC%88'%2B(sp%5B1%5D-sp%5B0%5D%2B1)%2B'%E4%BB%B6%EF%BC%89'%2B(gapsIn(sp%5B0%5D%2Csp%5B1%5D)%3F'%20%E2%9A%A0%EF%B8%8F%E9%80%94%E4%B8%AD%E3%81%AB%E6%8A%9C%E3%81%91'%3A'%20%E2%9C%85')%3A'%E7%AF%84%E5%9B%B2%EF%BC%9A%E5%85%A8%E9%83%A8%EF%BC%88'%2Bord.length%2B'%E4%BB%B6%EF%BC%89'%3B%0Arows()%3B%0Ata.value%3Don%3Ffmt(ord.slice(sp%5B0%5D%2Csp%5B1%5D%2B1))%3Afmt(ord)%7D%0Afunction%20line(L)%7B%0Avar%20f%3DL%5B0%5D%2Cok%3Dfalse%3B%0Aif(f)%7Bvar%20r%3Df.n.getBoundingClientRect()%2Csc%3DscrOf(f.n)%3Bok%3Dsc.scrollTop%3E5%26%26r.top%3E30%26%26r.top%3CinnerHeight-120%3Bif(ok)ln.style.top%3Dr.top%2B'px'%7D%0Aln.style.display%3Dok%3F'block'%3A'none'%7D%0Afunction%20scan()%7B%0Avar%20L%3Dmsgs()%2Cks%3D%5B%5D%2Ccnt%3D%7B%7D%3B%0AL.forEach(function(m)%7B%0Avar%20tx%3Dext(m.n)%3Bif(!tx)return%3B%0Avar%20sc%3DscrOf(m.n)%2Cy%3D(isDoc(sc)%3F0%3Asc.scrollTop-sc.getBoundingClientRect().top)%2B(isDoc(sc)%3FscrollY%3A0)%2Bm.n.getBoundingClientRect().top%3B%0Avar%20id%3Dm.n.getAttribute('data-message-id')%7C%7Cm.n.getAttribute('data-id')%7C%7Cm.n.id%3B%0Avar%20k%3Dm.r%2B'%3A'%2B(id%7C%7Ctx.slice(0%2C180)%2B'%40'%2BMath.round(y%2F4)*4)%3B%0Acnt%5Bk%5D%3D(cnt%5Bk%5D%7C%7C0)%2B1%3Bif(cnt%5Bk%5D%3E1)k%2B%3D'%23'%2Bcnt%5Bk%5D%3B%0Aks.push(k)%3Bels%5Bk%5D%3Dm.n%3B%0Avar%20o%3Dseen.get(k)%3Bif(!o)%7Bo%3D%7Bk%3Ak%2Cr%3Am.r%2Cx%3A''%2Cy%3A0%7D%3Bseen.set(k%2Co)%7D%0Aif(o.x.length%3C%3Dtx.length)o.x%3Dtx%3Bo.y%3Dy%7D)%3B%0Afor(var%20j%3D0%3Bj%2B1%3Cks.length%3Bj%2B%2B)if(ks%5Bj%5D!%3D%3Dks%5Bj%2B1%5D)%7Bnxt%5Bks%5Bj%5D%5D%3Dks%5Bj%2B1%5D%3Bprv%5Bks%5Bj%2B1%5D%5D%3Dks%5Bj%5D%7D%0Avar%20sc2%3DscrOf(L%5B0%5D%3FL%5B0%5D.n%3Adocument.body)%2Cdd%3DisDoc(sc2)%2Cy0%3Ddd%3F(scrollY%7C%7C0)%3Asc2.scrollTop%2Cch%3Ddd%3FinnerHeight%3Asc2.clientHeight%2Csh%3Ddd%3Fdocument.documentElement.scrollHeight%3Asc2.scrollHeight%3B%0Aif(ks.length)%7Bif(y0%3C%3D5)topKey%3Dks%5B0%5D%3Bif(y0%2Bch%3E%3Dsh-5)botKey%3Dks%5Bks.length-1%5D%7D%0Arender()%3Bline(L)%7D%0Afunction%20later()%7BclearTimeout(deb)%3Bdeb%3DsetTimeout(scan%2C250)%7D%0Avar%20obs%3Dnew%20MutationObserver(later)%3Bobs.observe(document.body%2C%7BchildList%3Atrue%2Csubtree%3Atrue%2CcharacterData%3Atrue%7D)%3B%0Awindow.addEventListener('scroll'%2Clater%2Ctrue)%3B%0A%0Afunction%20scroller()%7Bvar%20L%3Dmsgs()%3Breturn%20scrOf(L%5B0%5D%3FL%5B0%5D.n%3Adocument.body)%7D%0Afunction%20stop(t)%7Bauto%3Dfalse%3Brng%3Dfalse%3BclearTimeout(tm)%3BbAuto.textContent%3D'%E8%87%AA%E5%8B%95%E3%82%B9%E3%82%AD%E3%83%A3%E3%83%B3'%3BbRng.textContent%3D'%E7%AF%84%E5%9B%B2%E3%81%A0%E3%81%91%E3%82%B9%E3%82%AD%E3%83%A3%E3%83%B3'%3Bscan()%3Bif(t)msg.textContent%3Dt%7D%0Afunction%20step()%7B%0Aif(!auto)return%3B%0Ascan()%3B%0Avar%20sc%3Dscroller()%2Cdd%3DisDoc(sc)%2Ch%3DMath.max(200%2CMath.floor((dd%3FinnerHeight%3Asc.clientHeight)*.6))%2Cb%3Ddd%3FscrollY%3Asc.scrollTop%3B%0Aif(rng%26%26phase%3C0)%7Bvar%20e0%3Dels%5Bsel.s%5D%2CstartItem%3Dseen.get(sel.s)%3Bif(e0%26%26e0.isConnected)e0.scrollIntoView(%7Bblock%3A'start'%7D)%3Belse%20if(startItem)%7Bif(dd)window.scrollTo(0%2CMath.max(0%2CstartItem.y-80))%3Belse%20sc.scrollTop%3DMath.max(0%2CstartItem.y-80)%7Delse%7Bstop('%E9%96%8B%E5%A7%8B%E4%BD%8D%E7%BD%AE%E3%81%8C%E8%A6%8B%E3%81%A4%E3%81%8B%E3%82%8A%E3%81%BE%E3%81%9B%E3%82%93%E3%80%82%E9%96%8B%E5%A7%8B%E4%BD%8D%E7%BD%AE%E3%82%92%E9%81%B8%E3%81%B3%E7%9B%B4%E3%81%97%E3%81%A6%E3%81%AD')%3Breturn%7Dphase%3D1%3Bstill%3D0%3Bmsg.textContent%3D'%E9%96%8B%E5%A7%8B%E4%BD%8D%E7%BD%AE%E3%81%8B%E3%82%89%E4%B8%8B%E3%81%B8%E9%9B%86%E3%82%81%E4%B8%AD%E2%80%A6'%3Btm%3DsetTimeout(step%2C500)%3Breturn%7D%0Aif(rng%26%26phase%3E0%26%26sel.e!%3Dnull)%7Bvar%20endItem%3Dseen.get(sel.e)%2Ccur%3Ddd%3FscrollY%3Asc.scrollTop%2Cview%3Ddd%3FinnerHeight%3Asc.clientHeight%2CendPos%3DendItem%3FendItem.y%3AInfinity%3Bif(endItem%26%26cur%2Bview*.7%3E%3DendPos%26%26idx(sel.s)%3E%3D0%26%26idx(sel.e)%3E%3Didx(sel.s)%26%26!gapsIn(idx(sel.s)%2Cidx(sel.e)))%7Bstop('%E6%8C%87%E5%AE%9A%E3%81%97%E3%81%9F%E7%B5%82%E4%BA%86%E4%BD%8D%E7%BD%AE%E3%81%BE%E3%81%A7%E5%8F%96%E5%BE%97%E3%81%97%E3%81%BE%E3%81%97%E3%81%9F%E3%80%82%E7%AF%84%E5%9B%B2%E3%82%92%E7%A2%BA%E8%AA%8D%E3%81%97%E3%81%A6%E3%80%8C%E7%AF%84%E5%9B%B2%E3%82%B3%E3%83%94%E3%83%BC%E3%80%8D%E3%81%97%E3%81%A6%E3%81%AD')%3Breturn%7D%7D%0Aif(dd)scrollBy(0%2Cphase*h)%3Belse%20sc.scrollTop%3Db%2Bphase*h%3B%0Avar%20a%3Ddd%3FscrollY%3Asc.scrollTop%3B%0Aif(Math.abs(a-b)%3C2)still%2B%2B%3Belse%20still%3D0%3B%0Aif(still%3E%3D3)%7B%0Aif(phase%3C0)%7Bif(rng)%7Bstop('%E9%96%8B%E5%A7%8B%E4%BD%8D%E7%BD%AE%E3%81%8C%E8%A6%8B%E3%81%A4%E3%81%8B%E3%82%8A%E3%81%BE%E3%81%9B%E3%82%93%E3%81%A7%E3%81%97%E3%81%9F')%3Breturn%7Dphase%3D1%3Bstill%3D0%3Bmsg.textContent%3D'%E5%85%88%E9%A0%AD%E3%81%BE%E3%81%A7%E5%88%B0%E9%81%94%E3%80%82%E4%B8%8B%E3%81%B8%E9%9B%86%E3%82%81%E4%B8%AD%E2%80%A6'%7D%0Aelse%7Bstop(rng%3F'%E6%9C%80%E6%96%B0%E3%81%BE%E3%81%A7%E5%88%B0%E9%81%94%E3%80%82%E9%96%8B%E5%A7%8B%E4%BD%8D%E7%BD%AE%E3%81%8B%E3%82%89%E6%9C%80%E6%96%B0%E3%81%BE%E3%81%A7%E3%82%92%E5%8F%96%E5%BE%97%E3%81%97%E3%81%BE%E3%81%97%E3%81%9F%E3%80%82%E7%AF%84%E5%9B%B2%E3%82%92%E7%A2%BA%E8%AA%8D%E3%81%97%E3%81%A6%E3%81%AD'%3A'%E5%85%A8%E4%BD%93%E3%81%AE%E3%82%B9%E3%82%AD%E3%83%A3%E3%83%B3%E7%B5%82%E4%BA%86%E3%80%82%E3%82%B3%E3%83%94%E3%83%BC%E3%81%AF%E3%81%BE%E3%81%A0%E5%AE%9F%E8%A1%8C%E3%81%97%E3%81%A6%E3%81%84%E3%81%BE%E3%81%9B%E3%82%93%E3%80%82%E5%BF%85%E8%A6%81%E3%81%AA%E7%AF%84%E5%9B%B2%E3%82%92%E9%81%B8%E3%82%93%E3%81%A7%E3%81%AD')%3Breturn%7D%7D%0Atm%3DsetTimeout(step%2C400)%7D%0AbAuto.onclick%3Dfunction()%7B%0Aif(auto)%7Bstop('%E5%81%9C%E6%AD%A2%E3%81%97%E3%81%BE%E3%81%97%E3%81%9F')%3Breturn%7D%0Aauto%3Dtrue%3Brng%3Dfalse%3Bphase%3D-1%3Bstill%3D0%3BbAuto.textContent%3D'%E5%81%9C%E6%AD%A2%E3%81%99%E3%82%8B'%3Bmsg.textContent%3D'%E5%85%A8%E4%BD%93%E3%82%92%E3%82%B9%E3%82%AD%E3%83%A3%E3%83%B3%E4%B8%AD%EF%BC%88%E3%82%B3%E3%83%94%E3%83%BC%E3%81%AF%E3%81%97%E3%81%BE%E3%81%9B%E3%82%93%EF%BC%89%E2%80%A6'%3Bstep()%7D%3B%0AbRng.onclick%3Dfunction()%7B%0Aif(auto)%7Bstop('%E5%81%9C%E6%AD%A2%E3%81%97%E3%81%BE%E3%81%97%E3%81%9F')%3Breturn%7D%0Aif(sel.s%3D%3Dnull)%7Bmsg.textContent%3D'%E5%85%88%E3%81%AB%E9%96%8B%E5%A7%8B%E4%BD%8D%E7%BD%AE%E3%82%92%E6%B1%BA%E3%82%81%E3%81%A6%E3%81%AD%EF%BC%88%E7%95%AA%E5%8F%B7%20or%20%E3%83%9A%E3%83%BC%E3%82%B8%E3%81%A7%E9%81%B8%E3%81%B6%EF%BC%89'%3Breturn%7D%0Aauto%3Dtrue%3Brng%3Dtrue%3Bstill%3D0%3Bphase%3D-1%3BbRng.textContent%3D'%E5%81%9C%E6%AD%A2%E3%81%99%E3%82%8B'%3Bmsg.textContent%3Dsel.e%3F'%E6%8C%87%E5%AE%9A%E7%AF%84%E5%9B%B2%E3%82%92%E3%82%B9%E3%82%AD%E3%83%A3%E3%83%B3%E4%B8%AD%E2%80%A6'%3A'%E9%96%8B%E5%A7%8B%E4%BD%8D%E7%BD%AE%E3%81%8B%E3%82%89%E6%9C%80%E6%96%B0%E3%81%BE%E3%81%A7%E3%82%92%E3%82%B9%E3%82%AD%E3%83%A3%E3%83%B3%E4%B8%AD%E2%80%A6'%3Bstep()%7D%3B%0AbClr.onclick%3Dfunction()%7Bnxt%3D%7B%7D%3Bprv%3D%7B%7D%3Bels%3D%7B%7D%3BtopKey%3Dnull%3BbotKey%3Dnull%3Bsel%3D%7Bs%3Anull%2Ce%3Anull%7D%3Bseen.clear()%3BrowSig%3D''%3Bscan()%3Bmsg.textContent%3D'%E3%83%AA%E3%82%BB%E3%83%83%E3%83%88%E3%81%97%E3%81%BE%E3%81%97%E3%81%9F'%7D%3B%0AbRc.onclick%3Dfunction()%7Bsel%3D%7Bs%3Anull%2Ce%3Anull%7D%3BrowSig%3D''%3Brender()%3Bmsg.textContent%3D'%E7%AF%84%E5%9B%B2%E3%82%92%E3%82%AF%E3%83%AA%E3%82%A2%E3%81%97%E3%81%BE%E3%81%97%E3%81%9F%EF%BC%88%E5%85%A8%E9%83%A8%E3%81%AB%E3%81%AA%E3%82%8A%E3%81%BE%E3%81%99%EF%BC%89'%7D%3B%0Afunction%20doCopy(text%2Clabel)%7B%0Aif(!text)%7Bmsg.textContent%3D'%E7%99%BA%E8%A8%80%E3%81%8C%E8%A6%8B%E3%81%A4%E3%81%8B%E3%82%8A%E3%81%BE%E3%81%9B%E3%82%93%E3%80%82%E3%82%B9%E3%83%AC%E3%83%83%E3%83%89%E7%94%BB%E9%9D%A2%E3%81%A7%E6%8A%BC%E3%81%97%E3%81%A6%E3%81%AD'%3Breturn%7D%0Ata.value%3Dtext%3B%0Avar%20done%3Dfunction()%7Bmsg.textContent%3D'%E3%82%B3%E3%83%94%E3%83%BC%E3%81%97%E3%81%BE%E3%81%97%E3%81%9F%20'%2Blabel%2B'%20%E2%9C%85%20%E6%9C%80%E5%88%9D%E3%81%A8%E6%9C%80%E5%BE%8C%E3%82%92%E7%A2%BA%E8%AA%8D%E3%81%97%E3%81%A6%E3%81%AD'%7D%3B%0Avar%20fb%3Dfunction()%7Btry%7Bta.focus()%3Bta.select()%3Bta.setSelectionRange(0%2Cta.value.length)%3Bif(document.execCommand('copy'))%7Bdone()%3Breturn%7D%7Dcatch(e)%7B%7Dmsg.textContent%3D'%E8%87%AA%E5%8B%95%E3%82%B3%E3%83%94%E3%83%BC%E4%B8%8D%E5%8F%AF%E3%80%82%E9%81%B8%E6%8A%9E%E4%B8%AD%E3%81%AE%E6%9C%AC%E6%96%87%E3%82%92%E9%95%B7%E6%8A%BC%E3%81%97%E3%81%97%E3%81%A6%E3%82%B3%E3%83%94%E3%83%BC%E3%81%97%E3%81%A6%E3%81%AD'%7D%3B%0Atry%7Bnavigator.clipboard.writeText(text).then(done%2Cfb)%7Dcatch(e)%7Bfb()%7D%7D%0AbAll.onclick%3Dfunction()%7Bscan()%3BdoCopy(fmt(order)%2C'%E5%85%A8%E9%83%A8%20'%2Border.length%2B'%E4%BB%B6')%7D%3B%0AbRC.onclick%3Dfunction()%7Bscan()%3Bvar%20sp%3Dspan()%3BdoCopy(fmt(order.slice(sp%5B0%5D%2Csp%5B1%5D%2B1))%2C(sp%5B0%5D%2B1)%2B'%E3%80%9C'%2B(sp%5B1%5D%2B1)%2B'%E7%95%AA%20'%2B(sp%5B1%5D-sp%5B0%5D%2B1)%2B'%E4%BB%B6')%7D%3B%0Afunction%20num(inp%2Ckey)%7Binp.oninput%3Dfunction()%7Bvar%20v%3DparseInt(inp.value%2C10)%3Bsel%5Bkey%5D%3Dv%3E%3D1%26%26order%5Bv-1%5D%3Forder%5Bv-1%5D.k%3Anull%3BrowSig%3D''%3Brender()%7D%7D%0Anum(ns%2C's')%3Bnum(ne%2C'e')%3B%0Aiu.oninput%3Drender%3Bip.oninput%3Drender%3B%0A%0Afunction%20keyAt(t)%7Bscan()%3Bvar%20best%3Dnull%3Bfor(var%20k%20in%20els)%7Bvar%20e%3Dels%5Bk%5D%3Bif(e%26%26e.isConnected%26%26e.contains(t))best%3Dk%7Dreturn%20best%7D%0Afunction%20sig(e)%7Bvar%20s%3De.tagName.toLowerCase()%3Bfor(var%20i%3D0%3Bi%3Ce.classList.length%3Bi%2B%2B)s%2B%3D'.'%2BCSS.escape(e.classList%5Bi%5D)%3Breturn%20s%7D%0Afunction%20chain(x%2Croot)%7Bvar%20c%3D%5B%5D%3Bwhile(x%26%26x!%3D%3Droot%26%26x!%3D%3Ddocument.body%26%26x!%3D%3Ddocument.documentElement)%7Bc.push(x)%3Bx%3Dx.parentElement%7Dreturn%20c%7D%0Afunction%20derive(x%2Co%2Croot)%7B%0Avar%20cx%3Dchain(x%2Croot)%2Cco%3Dchain(o%2Croot)%3B%0Afor(var%20i%3Dcx.length-1%3Bi%3E%3D0%3Bi--)%7B%0Avar%20s%3Dsig(cx%5Bi%5D)%2Cms%3Dq(s%2Croot).filter(function(m)%7Breturn%20!host.contains(m)%7D)%3B%0Aif(!ms.length)continue%3B%0Aif(co.some(function(e)%7Breturn%20e.matches(s)%7D))continue%3B%0Aif(ms.some(function(m)%7Breturn%20ms.some(function(n)%7Breturn%20n!%3D%3Dm%26%26m.contains(n)%7D)%7D))continue%3B%0Areturn%20s%7D%0Areturn%20null%7D%0Afunction%20arm(p%2Cl)%7Bpick%3Dp%3Blearn%3Dl%3Bmsg.textContent%3Dl%3F'%E3%81%BE%E3%81%9A%E3%80%8C%E8%87%AA%E5%88%86%E3%81%AE%E7%99%BA%E8%A8%80%E3%80%8D%E3%82%92%E3%82%BF%E3%83%83%E3%83%97%E3%81%97%E3%81%A6%E3%81%AD'%3Ap%3F'%E7%94%BB%E9%9D%A2%E3%81%AE%E7%99%BA%E8%A8%80%E3%82%92%E3%82%BF%E3%83%83%E3%83%97%E3%81%97%E3%81%A6%E3%81%AD%EF%BC%88'%2B(p%3D%3D%3D's'%3F'%E9%96%8B%E5%A7%8B'%3A'%E7%B5%82%E4%BA%86')%2B'%EF%BC%89'%3A''%7D%0Afunction%20onTap(ev)%7B%0Aif(!pick%26%26!learn)return%3B%0Aif(host.contains(ev.target))return%3B%0Aev.preventDefault()%3Bev.stopPropagation()%3B%0Avar%20t%3Dev.target%3B%0Aif(pick)%7Bvar%20k%3DkeyAt(t)%2Cw%3Dpick%3Bpick%3Dnull%3Bif(!k)%7Bmsg.textContent%3D'%E7%99%BA%E8%A8%80%E3%81%AB%E5%BD%93%E3%81%9F%E3%82%89%E3%81%AA%E3%81%8B%E3%81%A3%E3%81%9F%E3%82%88%E3%80%82%E3%82%82%E3%81%86%E4%B8%80%E5%BA%A6%E3%83%9C%E3%82%BF%E3%83%B3%E3%81%8B%E3%82%89%E8%A9%A6%E3%81%97%E3%81%A6%E3%81%AD'%3Breturn%7Dsel%5Bw%5D%3Dk%3BrowSig%3D''%3Brender()%3Bmsg.textContent%3D(w%3D%3D%3D's'%3F'%E9%96%8B%E5%A7%8B'%3A'%E7%B5%82%E4%BA%86')%2B'%E3%82%92%20'%2B(idx(k)%2B1)%2B'%E7%95%AA%20%E3%81%AB%E3%81%97%E3%81%9F%E3%82%88'%3Breturn%7D%0Aif(!learn.u)%7Blearn.u%3Dt%3Bmsg.textContent%3D'%E6%AC%A1%E3%81%AB%E3%80%8CMuse%E3%81%AE%E7%99%BA%E8%A8%80%E3%80%8D%E3%82%92%E3%82%BF%E3%83%83%E3%83%97%E3%81%97%E3%81%A6%E3%81%AD'%3Breturn%7D%0Avar%20u%3Dlearn.u%3Blearn%3Dnull%3B%0Avar%20root%3DscrOf(u)%3Bif(isDoc(root))root%3Ddocument.body%3B%0Avar%20su%3Dderive(u%2Ct%2Croot)%2Csa%3Dderive(t%2Cu%2Croot)%3B%0Aif(!su%7C%7C!sa)%7Bmsg.textContent%3D'%E3%81%86%E3%81%BE%E3%81%8F%E8%A6%9A%E3%81%88%E3%82%89%E3%82%8C%E3%81%AA%E3%81%8B%E3%81%A3%E3%81%9F%E3%80%82%E5%88%A5%E3%81%AE%E7%99%BA%E8%A8%80%EF%BC%88%E3%81%B5%E3%81%A4%E3%81%86%E3%81%AE%E6%96%87%E7%AB%A0%E3%81%AE%E6%89%80%EF%BC%89%E3%81%A7%E8%A9%A6%E3%81%97%E3%81%A6%E3%81%AD'%3Breturn%7D%0Acfg%3D%7Bu%3Asu%2Ca%3Asa%7D%3Btry%7BlocalStorage.setItem('fish-log-sel'%2CJSON.stringify(cfg))%7Dcatch(e)%7B%7D%0Aseen.clear()%3Bnxt%3D%7B%7D%3Bprv%3D%7B%7D%3Bels%3D%7B%7D%3BrowSig%3D''%3Bscan()%3Bmsg.textContent%3Dorder.length%3F'%E5%BD%A2%E3%82%92%E8%A6%9A%E3%81%88%E3%81%9F%E3%82%88%20%F0%9F%90%9F%20'%2Border.length%2B'%E4%BB%B6%E8%A6%8B%E3%81%A4%E3%81%8B%E3%81%A3%E3%81%9F'%3A'%E8%A6%9A%E3%81%88%E3%81%9F%E3%81%91%E3%81%A9%E8%A6%8B%E3%81%A4%E3%81%8B%E3%82%89%E3%81%AA%E3%81%84%E2%80%A6%E5%88%A5%E3%81%AE%E7%99%BA%E8%A8%80%E3%81%A7%E8%A9%A6%E3%81%97%E3%81%A6%E3%81%AD'%7D%0Adocument.addEventListener('click'%2ConTap%2Ctrue)%3B%0AbPS.onclick%3Dfunction()%7Barm('s'%2Cnull)%7D%3B%0AbPE.onclick%3Dfunction()%7Barm('e'%2Cnull)%7D%3B%0AbLearn.onclick%3Dfunction()%7Barm(null%2C%7Bu%3Anull%7D)%7D%3B%0Axb.onclick%3Dfunction()%7Bpan.style.display%3D'none'%3Bbub.style.display%3D'block'%7D%3B%0Abub.onclick%3Dfunction()%7Bpan.style.display%3D'block'%3Bbub.style.display%3D'none'%7D%3B%0Awindow.__fishOff%3Dfunction()%7Bobs.disconnect()%3Bwindow.removeEventListener('scroll'%2Clater%2Ctrue)%3Bdocument.removeEventListener('click'%2ConTap%2Ctrue)%3BclearTimeout(tm)%3BclearTimeout(deb)%3Bauto%3Dfalse%7D%3B%0Ascan()%3B%0A%7D)()</textarea>
+<p class="st" id="status" role="status"></p>
+</section>
+
+<section class="box c2">
+<h2><span class="n">2</span>Safariに登録</h2>
+<p>① このページをブックマークに追加</p>
+<p>② ブックマーク一覧→編集→追加したものを開く</p>
+<p>③ 名前を「🐟FISH LOG🐟」にして、URL欄を全部消してコードを貼り付け→保存</p>
+<p>※ 貼ったあと、先頭が <code>javascript:</code> になっていればOK</p>
+</section>
+
+<section class="box c3">
+<h2><span class="n">3</span>初回だけ：画面の形を覚えさせる</h2>
+<p>① Museのスレッドを開いて、ブックマークをタップ → 魚群パネルが出ます</p>
+<p>② 「発言が見つかりません」と出たら「形を教える」をタップ</p>
+<p>③ 画面の<b>自分の発言</b>→<b>Museの発言</b>の順にタップ。覚えた形はこの端末に保存されます</p>
+<p>・最初から見つかる時は何もしなくてOK。Muse側の画面が変わって読めなくなったら、もう一度教えてね</p>
+</section>
+
+<section class="box c4">
+<h2><span class="n">4</span>使い方</h2>
+<p><b>全部読む</b>：「自動スキャン」は全体を集めるだけ（コピーはしません）。必要なら「全部コピー」</p>
+<p><b>範囲で読む</b>：開始・終了を決めて「範囲コピー」。先に「範囲だけスキャン」すると選んだ範囲だけ集めます</p>
+<p>・番号の欄に入力（空の開始＝先頭、空の終了＝最新）</p>
+<p>・一覧の「始」「終」をタップ</p>
+<p>・「開始をページで選ぶ」を押して、画面の発言をタップ</p>
+<p>・開始だけ決めて「範囲だけスキャン」にすると、その発言から最新（または終了）まで集めます。上の古い部分は読まないので速いよ</p>
+</section>
+
+<section class="box c5">
+<h2>🐡 注意</h2>
+<p>集めた分はページを開いている間だけ有効です。再読み込み・タブを閉じると消えます。</p>
+<p>番号は集めた分の通し番号です。上の方を追加で読み込むとずれるので、範囲は集め終わってから決めてね。</p>
+<p>会話は外部に送信しません。コピー時の発言者アイコンは 🐟 / 🐠 になります（本文中の名前は書き換えません）。</p>
+<p>Museの画面は公開仕様がないため、動かない時は「形を教える」を試してね。</p>
+</section>
+
+<footer><div class="deco">🐟 ✦ 🐠</div>made of fins, pixels &amp; tiny memories</footer>
+</main>
+
+<script>
+function fish(){
+var ID='fish-log-host',old=document.getElementById(ID);
+if(old){if(window.__fishOff)window.__fishOff();old.remove();var l0=document.getElementById(ID+'-line');if(l0)l0.remove();return}
+var nxt={},prv={},seen=new Map(),els={},order=[],topKey=null,botKey=null,auto=false,rng=false,tm=null,deb=null,phase=-1,still=0,mode='',sel={s:null,e:null},pick=null,learn=null,cfg=null,rowSig='';
+try{cfg=JSON.parse(localStorage.getItem('fish-log-sel')||'null')}catch(e){}
+var NV='#6379a8',AQ='#b9e5f2',BG='rgba(239,247,255,.97)',FG='#586f9e',FONT="'DotGothic16','Hiragino Kaku Gothic ProN',sans-serif";
+function el(tag,css,txt,p){var e=document.createElement(tag);e.style.cssText=css;if(txt)e.textContent=txt;if(p)p.appendChild(e);return e}
+var B2='border:1px solid '+AQ+';border-radius:8px;padding:2px 7px;font:inherit;font-size:11px;color:'+NV+';background:#e8eaff;touch-action:manipulation;cursor:pointer;';
+var BTN='border:1px solid '+AQ+';border-radius:9px;padding:6px 4px;font:inherit;font-size:11px;font-weight:bold;color:'+NV+';box-shadow:1px 2px 0 #c2c8ef;touch-action:manipulation;pointer-events:auto;cursor:pointer;'
+var host=el('div','position:fixed;right:10px;bottom:16px;z-index:2147483647;pointer-events:auto;touch-action:manipulation;font-family:'+FONT+';color:'+FG+';font-size:13px;line-height:1.5;text-align:left;',0,document.documentElement);
+host.id=ID;
+var ln=el('div','position:fixed;left:0;right:0;height:0;border-top:3px dashed #7fe3e0;z-index:2147483646;pointer-events:none;display:none;',0,document.documentElement);
+ln.id=ID+'-line';
+el('div','position:absolute;right:6px;top:2px;background:#a9b8ff;border:2px solid '+NV+';border-radius:6px;padding:0 6px;font:11px '+FONT+';color:'+NV+';','↑ここより上は画面から消えてるよ',ln);
+var bub=el('button',BTN+'display:none;width:46px;height:46px;font-size:22px;background:#d9f4f8;margin-left:auto;','🐟',host);
+var pan=el('div','width:min(280px,calc(100vw - 28px));max-height:54vh;overflow:auto;background:'+BG+';border:2px solid '+AQ+';border-radius:16px;box-shadow:0 5px 22px rgba(91,116,177,.28);padding:8px;pointer-events:auto;overscroll-behavior:contain;',0,host);
+var hd=el('div','display:flex;align-items:center;gap:6px;margin-bottom:6px;',0,pan);
+el('div','flex:1;font-weight:bold;font-size:15px;','🐟 FISH LOG 🐠',hd);
+var xb=el('button',BTN+'width:36px;background:#a9b8ff;','▁',hd);
+var st=el('div','padding:6px 8px;background:#e8f5ff;border:1px solid '+AQ+';border-radius:6px;font-weight:bold;','',pan);
+var gp=el('div','padding:6px 8px;margin-top:6px;border:1px solid '+AQ+';border-radius:9px;font-size:11px;','',pan);
+var g1=el('div','display:grid;grid-template-columns:1fr 1fr;gap:6px;margin:8px 0;',0,pan);
+var bAuto=el('button',BTN+'background:#7fe3e0;','自動スキャン',g1);
+var bAll=el('button',BTN+'background:#b8f2e6;','全部コピー',g1);
+el('div','font-weight:bold;border-top:1px dashed '+AQ+';padding-top:6px;','✂ 範囲を決める',pan);
+var rw=el('div','display:flex;align-items:center;gap:4px;margin:4px 0;',0,pan);
+var IN='width:100%;padding:6px;font:12px '+FONT+';color:'+NV+';border:1px solid '+AQ+';border-radius:9px;background:#f5fbff;';
+var ns=el('input',IN,0,rw);ns.type='number';ns.inputMode='numeric';ns.placeholder='開始(先頭)';
+el('span','','〜',rw);
+var ne=el('input',IN,0,rw);ne.type='number';ne.inputMode='numeric';ne.placeholder='終了(最新)';
+var ri=el('div','font-size:12px;margin:2px 0 6px;','',pan);
+var g2=el('div','display:grid;grid-template-columns:1fr 1fr;gap:6px;',0,pan);
+var bPS=el('button',BTN+'background:#8fd0ff;','📍開始をページで選ぶ',g2);
+var bPE=el('button',BTN+'background:#8fd0ff;','📍終了をページで選ぶ',g2);
+var bRng=el('button',BTN+'background:#a9b8ff;','範囲だけスキャン',g2);
+var bRC=el('button',BTN+'background:#7fe3e0;','範囲コピー',g2);
+var bRc=el('button',BTN+'background:#b8f2e6;','範囲クリア',g2);
+var bLearn=el('button',BTN+'background:#b8f2e6;','形を教える',g2);
+var bClr=el('button',BTN+'background:#a9b8ff;grid-column:1/3;margin-top:0;','集めたログをリセット',g2);
+var msg=el('div','font-size:11px;margin:6px 0;','手動でスクロールしても集まるよ',pan);
+var nm=el('div','display:grid;grid-template-columns:1fr 1fr;gap:6px;',0,pan);
+var iu=el('input',IN,0,el('label','font-size:11px;','ユーザー名',nm));iu.value='🐟';
+var ip=el('input',IN,0,el('label','font-size:11px;','パートナー名',nm));ip.value='🐠';
+var lst=el('div','max-height:150px;overflow:auto;margin-top:8px;border:2px solid '+AQ+';border-radius:6px;',0,pan);
+var ta=el('textarea','display:block;width:100%;height:100px;margin-top:8px;padding:6px;font:11px/1.4 ui-monospace,monospace;color:'+NV+';border:1px solid '+AQ+';border-radius:9px;background:#f5fbff;',0,pan);
+ta.readOnly=true;ta.setAttribute('aria-label','集めた会話');
+
+function q(s,root){try{return [].slice.call((root||document).querySelectorAll(s))}catch(e){return []}}
+var PAIRS=[['[data-message-author-role="user"]','[data-message-author-role="assistant"]'],['[data-role="user"]','[data-role="assistant"]'],['[data-author="user"]','[data-author="assistant"]'],['[data-sender="user"]','[data-sender="assistant"]'],['[data-testid*="user-message" i]','[data-testid*="assistant-message" i]'],['[data-testid*="user" i][data-testid*="message" i]','[data-testid*="muse" i][data-testid*="message" i]'],['[data-testid*="human" i]','[data-testid*="muse" i]'],['[class*="user-message" i]','[class*="assistant-message" i]']];
+function keep(r){return r.filter(function(m){return !host.contains(m.n)&&!r.some(function(o){return o!==m&&o.n.contains(m.n)})})}
+function build(su,sa,label){
+var r=[];q(su).forEach(function(n){r.push({n:n,r:'user'})});q(sa).forEach(function(n){r.push({n:n,r:'assistant'})});
+r=keep(r);if(!r.length)return null;
+r.sort(function(x,y){return x.n.compareDocumentPosition(y.n)&4?-1:1});mode=label;return r}
+function msgs(){
+var r=null;
+if(cfg&&cfg.u&&cfg.a)r=build(cfg.u,cfg.a,'覚えた形');
+for(var i=0;i<PAIRS.length&&!r;i++)r=build(PAIRS[i][0],PAIRS[i][1],'自動検出');
+if(!r){mode='';return[]}
+return r}
+function ext(root){
+var c=root.cloneNode(true);
+c.querySelectorAll('button,svg,nav,style,script,.sr-only,[aria-hidden="true"],[role="toolbar"]').forEach(function(e){e.remove()});
+var B={ADDRESS:1,ARTICLE:1,ASIDE:1,BLOCKQUOTE:1,DD:1,DIV:1,DL:1,DT:1,FIGURE:1,H1:1,H2:1,H3:1,H4:1,LI:1,OL:1,P:1,PRE:1,SECTION:1,TABLE:1,TR:1,UL:1},out='';
+function w(n){
+if(n.nodeType===3){out+=n.nodeValue;return}
+if(n.nodeType!==1)return;
+if(n.tagName==='BR'){out+='\n';return}
+var b=B[n.tagName];
+if(b&&out&&out.slice(-1)!=='\n')out+='\n';
+for(var i=0;i<n.childNodes.length;i++)w(n.childNodes[i]);
+if(b&&out.slice(-1)!=='\n')out+='\n'}
+w(c);
+return out.replace(/[ \t]+\n/g,'\n').replace(/\n{3,}/g,'\n\n').replace(/^\n+|\n+$/g,'')}
+function scrOf(n){while(n&&n!==document.documentElement){var s=getComputedStyle(n);if(/auto|scroll/.test(s.overflowY)&&n.scrollHeight>n.clientHeight+50)return n;n=n.parentElement}return document.scrollingElement||document.documentElement}
+function isDoc(sc){return sc===document.scrollingElement||sc===document.documentElement||sc===document.body}
+function idx(k){for(var i=0;i<order.length;i++)if(order[i].k===k)return i;return -1}
+function span(){var n=order.length,i=0,j=n-1;if(sel.s!=null){i=idx(sel.s);if(i<0)i=0}if(sel.e!=null){j=idx(sel.e);if(j<0)j=n-1}if(i>j){var t=i;i=j;j=t}return[i,j]}
+function gapsIn(i,j){var g=0;for(var p=i;p<j;p++)if(nxt[order[p].k]!==order[p+1].k)g++;return g}
+function names(){return[iu.value.trim()||'♡user♡',ip.value.trim()||'♡partner♡']}
+function fmt(l){var n=names();return l.map(function(m){return '【'+(m.r==='user'?n[0]:n[1])+'】\n'+m.x}).join('\n\n')}
+function rows(){
+var sg=order.length+'|'+(order[0]&&order[0].k)+'|'+(order.length&&order[order.length-1].k)+'|'+sel.s+'|'+sel.e;
+if(sg===rowSig)return;rowSig=sg;lst.textContent='';
+var sp=span(),on=sel.s!=null||sel.e!=null;
+order.forEach(function(m,i){
+var r=el('div','display:flex;align-items:center;gap:4px;padding:3px 4px;border-bottom:1px solid #d6e7f5;font-size:11px;background:'+(on&&i>=sp[0]&&i<=sp[1]?'#e3f5ff':'transparent')+';',0,lst);
+el('span','width:28px;text-align:right;opacity:.8;',String(i+1),r);
+el('span','',m.r==='user'?'🐟':'🐠',r);
+el('span','flex:1;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;',m.x.replace(/\s+/g,' ').slice(0,30),r);
+var a=el('button',B2+'background:'+(sel.s===m.k?'#7fe3e0':'#a9b8ff')+';','始',r);
+var b=el('button',B2+'background:'+(sel.e===m.k?'#7fe3e0':'#a9b8ff')+';','終',r);
+a.onclick=function(){sel.s=sel.s===m.k?null:m.k;rowSig='';render()};
+b.onclick=function(){sel.e=sel.e===m.k?null:m.k;rowSig='';render()}})}
+function render(){
+var heads=[];seen.forEach(function(v){heads.push(v)});
+heads.sort(function(a,b){return a.y-b.y});
+var ord=heads;
+order=ord;
+if(sel.s!=null&&idx(sel.s)<0)sel.s=null;
+if(sel.e!=null&&idx(sel.e)<0)sel.e=null;
+var gaps=0;for(var gi=0;gi+1<ord.length;gi++)if(nxt[ord[gi].k]!==ord[gi+1].k)gaps++;var top=!!topKey&&seen.has(topKey)&&!prv[topKey],bot=!!botKey&&seen.has(botKey)&&!nxt[botKey];
+st.textContent='🐟 集めた '+ord.length+'件'+(mode?' / '+mode:'');
+gp.textContent=!ord.length?'発言が見つかりません。「形を教える」で、自分の発言→Museの発言の順にタップしてね':(gaps?'⚠️ 途中に抜けが'+gaps+'か所。スクロールで戻ってね':'✅ 抜けなし')+(top?' / 先頭まで取得済み ✅':' / 先頭はまだ ⬆️')+(bot?' / 末尾まで取得済み ✅':' / 末尾はまだ ⬇️');
+gp.style.background=!ord.length||gaps?'#f2eaff':'#e4f8f4';
+var sp=span(),on=sel.s!=null||sel.e!=null;
+if(document.activeElement!==ns)ns.value=sel.s!=null?idx(sel.s)+1:'';
+if(document.activeElement!==ne)ne.value=sel.e!=null?idx(sel.e)+1:'';
+ri.textContent=!ord.length?'':on?'範囲：'+(sp[0]+1)+'〜'+(sp[1]+1)+'番（'+(sp[1]-sp[0]+1)+'件）'+(gapsIn(sp[0],sp[1])?' ⚠️途中に抜け':' ✅'):'範囲：全部（'+ord.length+'件）';
+rows();
+ta.value=on?fmt(ord.slice(sp[0],sp[1]+1)):fmt(ord)}
+function line(L){
+var f=L[0],ok=false;
+if(f){var r=f.n.getBoundingClientRect(),sc=scrOf(f.n);ok=sc.scrollTop>5&&r.top>30&&r.top<innerHeight-120;if(ok)ln.style.top=r.top+'px'}
+ln.style.display=ok?'block':'none'}
+function scan(){
+var L=msgs(),ks=[],cnt={};
+L.forEach(function(m){
+var tx=ext(m.n);if(!tx)return;
+var sc=scrOf(m.n),y=(isDoc(sc)?0:sc.scrollTop-sc.getBoundingClientRect().top)+(isDoc(sc)?scrollY:0)+m.n.getBoundingClientRect().top;
+var id=m.n.getAttribute('data-message-id')||m.n.getAttribute('data-id')||m.n.id;
+var k=m.r+':'+(id||tx.slice(0,180)+'@'+Math.round(y/4)*4);
+cnt[k]=(cnt[k]||0)+1;if(cnt[k]>1)k+='#'+cnt[k];
+ks.push(k);els[k]=m.n;
+var o=seen.get(k);if(!o){o={k:k,r:m.r,x:'',y:0};seen.set(k,o)}
+if(o.x.length<=tx.length)o.x=tx;o.y=y});
+for(var j=0;j+1<ks.length;j++)if(ks[j]!==ks[j+1]){nxt[ks[j]]=ks[j+1];prv[ks[j+1]]=ks[j]}
+var sc2=scrOf(L[0]?L[0].n:document.body),dd=isDoc(sc2),y0=dd?(scrollY||0):sc2.scrollTop,ch=dd?innerHeight:sc2.clientHeight,sh=dd?document.documentElement.scrollHeight:sc2.scrollHeight;
+if(ks.length){if(y0<=5)topKey=ks[0];if(y0+ch>=sh-5)botKey=ks[ks.length-1]}
+render();line(L)}
+function later(){clearTimeout(deb);deb=setTimeout(scan,250)}
+var obs=new MutationObserver(later);obs.observe(document.body,{childList:true,subtree:true,characterData:true});
+window.addEventListener('scroll',later,true);
+
+function scroller(){var L=msgs();return scrOf(L[0]?L[0].n:document.body)}
+function stop(t){auto=false;rng=false;clearTimeout(tm);bAuto.textContent='自動スキャン';bRng.textContent='範囲だけスキャン';scan();if(t)msg.textContent=t}
+function step(){
+if(!auto)return;
+scan();
+var sc=scroller(),dd=isDoc(sc),h=Math.max(200,Math.floor((dd?innerHeight:sc.clientHeight)*.6)),b=dd?scrollY:sc.scrollTop;
+if(rng&&phase<0){var e0=els[sel.s],startItem=seen.get(sel.s);if(e0&&e0.isConnected)e0.scrollIntoView({block:'start'});else if(startItem){if(dd)window.scrollTo(0,Math.max(0,startItem.y-80));else sc.scrollTop=Math.max(0,startItem.y-80)}else{stop('開始位置が見つかりません。開始位置を選び直してね');return}phase=1;still=0;msg.textContent='開始位置から下へ集め中…';tm=setTimeout(step,500);return}
+if(rng&&phase>0&&sel.e!=null){var endItem=seen.get(sel.e),cur=dd?scrollY:sc.scrollTop,view=dd?innerHeight:sc.clientHeight,endPos=endItem?endItem.y:Infinity;if(endItem&&cur+view*.7>=endPos&&idx(sel.s)>=0&&idx(sel.e)>=idx(sel.s)&&!gapsIn(idx(sel.s),idx(sel.e))){stop('指定した終了位置まで取得しました。範囲を確認して「範囲コピー」してね');return}}
+if(dd)scrollBy(0,phase*h);else sc.scrollTop=b+phase*h;
+var a=dd?scrollY:sc.scrollTop;
+if(Math.abs(a-b)<2)still++;else still=0;
+if(still>=3){
+if(phase<0){if(rng){stop('開始位置が見つかりませんでした');return}phase=1;still=0;msg.textContent='先頭まで到達。下へ集め中…'}
+else{stop(rng?'最新まで到達。開始位置から最新までを取得しました。範囲を確認してね':'全体のスキャン終了。コピーはまだ実行していません。必要な範囲を選んでね');return}}
+tm=setTimeout(step,400)}
+bAuto.onclick=function(){
+if(auto){stop('停止しました');return}
+auto=true;rng=false;phase=-1;still=0;bAuto.textContent='停止する';msg.textContent='全体をスキャン中（コピーはしません）…';step()};
+bRng.onclick=function(){
+if(auto){stop('停止しました');return}
+if(sel.s==null){msg.textContent='先に開始位置を決めてね（番号 or ページで選ぶ）';return}
+auto=true;rng=true;still=0;phase=-1;bRng.textContent='停止する';msg.textContent=sel.e?'指定範囲をスキャン中…':'開始位置から最新までをスキャン中…';step()};
+bClr.onclick=function(){nxt={};prv={};els={};topKey=null;botKey=null;sel={s:null,e:null};seen.clear();rowSig='';scan();msg.textContent='リセットしました'};
+bRc.onclick=function(){sel={s:null,e:null};rowSig='';render();msg.textContent='範囲をクリアしました（全部になります）'};
+function doCopy(text,label){
+if(!text){msg.textContent='発言が見つかりません。スレッド画面で押してね';return}
+ta.value=text;
+var done=function(){msg.textContent='コピーしました '+label+' ✅ 最初と最後を確認してね'};
+var fb=function(){try{ta.focus();ta.select();ta.setSelectionRange(0,ta.value.length);if(document.execCommand('copy')){done();return}}catch(e){}msg.textContent='自動コピー不可。選択中の本文を長押ししてコピーしてね'};
+try{navigator.clipboard.writeText(text).then(done,fb)}catch(e){fb()}}
+bAll.onclick=function(){scan();doCopy(fmt(order),'全部 '+order.length+'件')};
+bRC.onclick=function(){scan();var sp=span();doCopy(fmt(order.slice(sp[0],sp[1]+1)),(sp[0]+1)+'〜'+(sp[1]+1)+'番 '+(sp[1]-sp[0]+1)+'件')};
+function num(inp,key){inp.oninput=function(){var v=parseInt(inp.value,10);sel[key]=v>=1&&order[v-1]?order[v-1].k:null;rowSig='';render()}}
+num(ns,'s');num(ne,'e');
+iu.oninput=render;ip.oninput=render;
+
+function keyAt(t){scan();var best=null;for(var k in els){var e=els[k];if(e&&e.isConnected&&e.contains(t))best=k}return best}
+function sig(e){var s=e.tagName.toLowerCase();for(var i=0;i<e.classList.length;i++)s+='.'+CSS.escape(e.classList[i]);return s}
+function chain(x,root){var c=[];while(x&&x!==root&&x!==document.body&&x!==document.documentElement){c.push(x);x=x.parentElement}return c}
+function derive(x,o,root){
+var cx=chain(x,root),co=chain(o,root);
+for(var i=cx.length-1;i>=0;i--){
+var s=sig(cx[i]),ms=q(s,root).filter(function(m){return !host.contains(m)});
+if(!ms.length)continue;
+if(co.some(function(e){return e.matches(s)}))continue;
+if(ms.some(function(m){return ms.some(function(n){return n!==m&&m.contains(n)})}))continue;
+return s}
+return null}
+function arm(p,l){pick=p;learn=l;msg.textContent=l?'まず「自分の発言」をタップしてね':p?'画面の発言をタップしてね（'+(p==='s'?'開始':'終了')+'）':''}
+function onTap(ev){
+if(!pick&&!learn)return;
+if(host.contains(ev.target))return;
+ev.preventDefault();ev.stopPropagation();
+var t=ev.target;
+if(pick){var k=keyAt(t),w=pick;pick=null;if(!k){msg.textContent='発言に当たらなかったよ。もう一度ボタンから試してね';return}sel[w]=k;rowSig='';render();msg.textContent=(w==='s'?'開始':'終了')+'を '+(idx(k)+1)+'番 にしたよ';return}
+if(!learn.u){learn.u=t;msg.textContent='次に「Museの発言」をタップしてね';return}
+var u=learn.u;learn=null;
+var root=scrOf(u);if(isDoc(root))root=document.body;
+var su=derive(u,t,root),sa=derive(t,u,root);
+if(!su||!sa){msg.textContent='うまく覚えられなかった。別の発言（ふつうの文章の所）で試してね';return}
+cfg={u:su,a:sa};try{localStorage.setItem('fish-log-sel',JSON.stringify(cfg))}catch(e){}
+seen.clear();nxt={};prv={};els={};rowSig='';scan();msg.textContent=order.length?'形を覚えたよ 🐟 '+order.length+'件見つかった':'覚えたけど見つからない…別の発言で試してね'}
+document.addEventListener('click',onTap,true);
+bPS.onclick=function(){arm('s',null)};
+bPE.onclick=function(){arm('e',null)};
+bLearn.onclick=function(){arm(null,{u:null})};
+xb.onclick=function(){pan.style.display='none';bub.style.display='block'};
+bub.onclick=function(){pan.style.display='block';bub.style.display='none'};
+window.__fishOff=function(){obs.disconnect();window.removeEventListener('scroll',later,true);document.removeEventListener('click',onTap,true);clearTimeout(tm);clearTimeout(deb);auto=false};
+scan();
+}
+
+var code='javascript:'+encodeURIComponent('('+fish.toString()+')()');
+document.getElementById('code').value=code;
+document.getElementById('copyCode').addEventListener('click',function(){
+var s=document.getElementById('status'),a=document.getElementById('code');
+function fb(){a.focus();a.select();a.setSelectionRange(0,a.value.length);s.textContent='自動コピーできませんでした。コード欄を長押ししてコピーしてね'}
+try{navigator.clipboard.writeText(code).then(function(){s.textContent='コピーしました ✅ ブックマークのURL欄に貼り付けてね'},fb)}catch(e){fb()}});
+(function(){var sea=document.getElementById('sea'),F=['🐟','🐠','🐡','🐟','🐠'];for(var i=0;i<9;i++){var s=document.createElement('span');s.textContent=F[i%F.length];if(i%2)s.className='r';s.style.top=(8+Math.random()*82)+'%';s.style.fontSize=(18+Math.random()*18)+'px';s.style.animationDuration=(22+Math.random()*30)+'s';s.style.animationDelay=-Math.random()*40+'s';sea.appendChild(s)}})();
+</script>
+</body>
+</html>
